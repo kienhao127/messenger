@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="2dp"
+    android:orientation="vertical">
+    <TextView
+        android:gravity="center_horizontal"
+        android:id="@+id/textViewSendTime"
+        android:layout_width="match_parent"
+        android:layout_height="15dp"
+        android:minHeight="30dp"
+        android:text="17/08/25 09:47"
+        android:layout_marginBottom="5dp"/>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp">
+
+        <ImageView
+            android:id="@+id/imageViewAvatar"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/user_placeholder" />
+
+        <TextView
+            android:id="@+id/textViewContent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxWidth="300dp"
+            android:minHeight="30dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
+            android:layout_toEndOf="@+id/imageViewAvatar"
+            android:layout_toRightOf="@+id/imageViewAvatar"
+            android:background="@drawable/message_box"
+            android:padding="7dp"
+            android:layout_centerVertical="true"
+            android:text="Nội dung tin nhắn"
+            android:gravity="center|left"
+            android:textColor="#000" />
+    </RelativeLayout>
+</LinearLayout>

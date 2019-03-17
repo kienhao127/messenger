@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="10dp">
+    <ImageView
+        android:id="@+id/imageViewAvatar"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@drawable/user_placeholder"
+        android:layout_marginRight="15dp"/>
+    <TextView
+        android:id="@+id/textViewName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@+id/textViewSendTime"
+        android:layout_toRightOf="@+id/imageViewAvatar"
+        android:textSize="20dp"
+        android:text="Tên user"
+        android:textColor="#000000"
+        />
+    <TextView
+        android:id="@+id/textViewLastMess"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/imageViewAvatar"
+        android:layout_below="@+id/textViewName"
+        android:textSize="15dp"
+        android:text="Nội dung tin nhắn"
+        android:ellipsize="end"
+        android:maxLines="1"/>
+    <TextView
+        android:id="@+id/textViewSendTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hôm qua"
+        android:textSize="10dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"/>
+
+    <ImageView
+        android:id="@+id/imageViewUnreadDot"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textViewSendTime"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:paddingTop="5dp"
+        android:src="@drawable/unread_dot" />
+</RelativeLayout>
