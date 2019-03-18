@@ -1,14 +1,104 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MessageFragment">
+    android:background="#eeeeee">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rvListMessage"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:clickable="true"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:paddingBottom="5dp"
+        android:layout_above="@+id/textInputLayout">
+    </android.support.v7.widget.RecyclerView>
 
-</FrameLayout>
+    <!--<TextView-->
+        <!--android:id="@+id/textViewLoading"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:background="#eeeeee"-->
+        <!--android:gravity="center"-->
+        <!--android:text="Đang tải..."-->
+        <!--android:textSize="17dp"-->
+        <!--android:layout_alignParentLeft="true"-->
+        <!--android:layout_alignParentStart="true" />-->
+
+    <!--<TextView-->
+        <!--android:id="@+id/textViewNoMessage"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:background="#eeeeee"-->
+        <!--android:gravity="center_horizontal"-->
+        <!--android:text="Không có tin nhắn"-->
+        <!--android:textSize="20dp"-->
+        <!--android:layout_alignParentLeft="true"-->
+        <!--android:layout_alignParentStart="true"-->
+        <!--android:visibility="gone"/>-->
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FFF"
+        android:id="@+id/textInputLayout"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:padding="5dp">
+        <ImageView
+            android:padding="8dp"
+            android:id="@+id/imageViewEmoji"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignBottom="@+id/editText"
+            android:src="@drawable/emoji"/>
+        <EditText
+            android:id="@+id/editText"
+            android:background="@drawable/input_box"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="40dp"
+            android:hint="Nhập tin nhắn"
+            android:paddingHorizontal="15dp"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:maxLines="5"
+            android:layout_toLeftOf="@+id/imageViewSend"
+            android:layout_toStartOf="@+id/imageViewSend"
+            android:layout_toRightOf="@+id/imageViewEmoji"
+            android:layout_toEndOf="@+id/imageViewEmoji" />
+        <ImageView
+            android:id="@+id/imageViewAttachFile"
+            android:padding="8dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/attach_file"
+            android:layout_alignBottom="@+id/editText"
+            android:visibility="visible"
+            android:layout_toLeftOf="@+id/imageViewImage"/>
+        <ImageView
+            android:id="@+id/imageViewImage"
+            android:padding="8dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/image"
+            android:layout_alignBottom="@+id/editText"
+            android:visibility="visible"
+            android:layout_alignParentRight="true" />
+        <ImageView
+            android:id="@+id/imageViewSend"
+            android:padding="8dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/send"
+            android:layout_alignBottom="@+id/editText"
+            android:visibility="gone"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
+    </RelativeLayout>
+
+</RelativeLayout>

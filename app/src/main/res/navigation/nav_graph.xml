@@ -49,10 +49,18 @@
         <action
             android:id="@+id/action_messageFragment_to_viewFileFragment"
             app:destination="@id/viewFileFragment" />
+        <action
+            android:id="@+id/action_messageFragment_to_galleryFragment"
+            app:destination="@id/galleryFragment" />
     </fragment>
     <fragment
         android:id="@+id/viewFileFragment"
         android:name="com.example.messenger.ViewFileFragment"
         android:label="fragment_view_file"
         tools:layout="@layout/fragment_view_file" />
+    <fragment
+        android:id="@+id/galleryFragment"
+        android:name="com.example.messenger.GalleryFragment"
+        android:label="fragment_gallery"
+        tools:layout="@layout/fragment_gallery" />
 </navigation>

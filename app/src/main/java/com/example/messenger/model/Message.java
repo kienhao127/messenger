@@ -11,9 +11,18 @@ public class Message {
     public int id;
     public User user;
     public String content;
-    public long sendTime;
+    public double sendTime;
     public String topicID;
 
+    public Message(int type, int id, User user, String content, double sendTime, String topicID) {
+        this.type = type;
+        this.id = id;
+        this.user = user;
+        this.content = content;
+        this.sendTime = sendTime;
+        this.topicID = topicID;
+    }
 
-
+    public Message() {
+    }
 }
