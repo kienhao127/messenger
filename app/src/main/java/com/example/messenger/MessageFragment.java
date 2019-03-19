@@ -11,8 +11,10 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -90,6 +92,17 @@ public class MessageFragment extends Fragment {
         imageViewSend = (ImageView) view.findViewById(R.id.imageViewSend);
         editText = (EditText) getView().findViewById(R.id.editText);
 
+        Toolbar toolbar = (Toolbar) view.findViewById(R.id.my_toolbar);
+        toolbar.setTitle("Lương Kiên Hào");
+        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+        toolbar.setNavigationIcon(R.drawable.arrow_back);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getActivity().onBackPressed();
+            }
+        });
+
     }
 
     @Override
@@ -112,11 +125,9 @@ public class MessageFragment extends Fragment {
                 Log.d("LOG", s.toString().trim().length() + "");
                 if (s.toString().trim().length() == 0){
                     imageViewAttachFile.setVisibility(View.VISIBLE);
-                    imageViewImage.setVisibility(View.VISIBLE);
                     imageViewSend.setVisibility(View.GONE);
                 } else {
                     imageViewAttachFile.setVisibility(View.GONE);
-                    imageViewImage.setVisibility(View.GONE);
                     imageViewSend.setVisibility(View.VISIBLE);
                 }
             }

@@ -40,6 +40,9 @@
         <action
             android:id="@+id/action_listTopicFragment_to_messageFragment"
             app:destination="@id/messageFragment" />
+        <action
+            android:id="@+id/action_listTopicFragment_to_createGroup"
+            app:destination="@id/createGroupFragment" />
     </fragment>
     <fragment
         android:id="@+id/messageFragment"
@@ -47,20 +50,17 @@
         android:label="fragment_message"
         tools:layout="@layout/fragment_message" >
         <action
-            android:id="@+id/action_messageFragment_to_viewFileFragment"
-            app:destination="@id/viewFileFragment" />
-        <action
             android:id="@+id/action_messageFragment_to_galleryFragment"
             app:destination="@id/galleryFragment" />
     </fragment>
-    <fragment
-        android:id="@+id/viewFileFragment"
-        android:name="com.example.messenger.ViewFileFragment"
-        android:label="fragment_view_file"
-        tools:layout="@layout/fragment_view_file" />
     <fragment
         android:id="@+id/galleryFragment"
         android:name="com.example.messenger.GalleryFragment"
         android:label="fragment_gallery"
         tools:layout="@layout/fragment_gallery" />
+    <fragment
+        android:id="@+id/createGroupFragment"
+        android:name="com.example.messenger.CreateGroupFragment"
+        android:label="fragment_create_group"
+        tools:layout="@layout/fragment_create_group" />
 </navigation>

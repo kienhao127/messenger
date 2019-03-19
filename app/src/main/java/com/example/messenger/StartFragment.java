@@ -37,7 +37,7 @@ public class StartFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         Bundle bundle = new Bundle();
         bundle.putString("amount", "Hello");
-        getView().findViewById(R.id.nav_button).setOnClickListener(Navigation.createNavigateOnClickListener(R.id.messageFragment, bundle));
+        getView().findViewById(R.id.nav_button).setOnClickListener(Navigation.createNavigateOnClickListener(R.id.listTopicFragment, bundle));
 
     }
 

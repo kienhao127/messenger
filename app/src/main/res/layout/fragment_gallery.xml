@@ -1,7 +1,18 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="#000"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/my_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_marginLeft="0dp"
+        app:titleTextColor="#FFF"
+        android:background="#000"/>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/galleryRecyclerView"
@@ -10,4 +21,4 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"/>
 
-</RelativeLayout>
+</LinearLayout>
