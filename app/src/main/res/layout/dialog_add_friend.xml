@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="10dp">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Nhập email"
+        android:textSize="15dp"/>
+    <EditText
+        android:id="@+id/email_edit_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/colorPrimary"
+        android:textCursorDrawable="@null"
+        android:textColor="#000000"
+        />
+    <Button
+        android:id="@+id/search_button"
+        android:layout_width="120dp"
+        android:layout_height="40dp"
+        android:layout_gravity="end"
+        android:background="#008FE5"
+        android:textColor="#FFFFFF"
+        android:textSize="15dp"
+        android:text="Tìm kiếm"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rvSearchResult"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clickable="true"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
+    </android.support.v7.widget.RecyclerView>
+</LinearLayout>

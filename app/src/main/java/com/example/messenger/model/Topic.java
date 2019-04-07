@@ -1,14 +1,14 @@
 package com.example.messenger.model;
 
 public class Topic {
-    public User user;
+    public User[] users;
     public String lastMess;
     public long sendTime;
     public String topicID;
     public boolean hasNewMessage;
 
-    public Topic(User user, String lastMess, long sendTime, String topicID, boolean hasNewMessage) {
-        this.user = user;
+    public Topic(User[] users, String lastMess, long sendTime, String topicID, boolean hasNewMessage) {
+        this.users = users;
         this.lastMess = lastMess;
         this.sendTime = sendTime;
         this.topicID = topicID;

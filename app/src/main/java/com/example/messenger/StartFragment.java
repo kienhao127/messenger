@@ -1,6 +1,8 @@
 package com.example.messenger;
 
 import android.Manifest;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -35,10 +37,15 @@ public class StartFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Bundle bundle = new Bundle();
-        bundle.putString("amount", "Hello");
-        getView().findViewById(R.id.nav_button).setOnClickListener(Navigation.createNavigateOnClickListener(R.id.listTopicFragment, bundle));
-
+        SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+        String userInfo = sharedPref.getString("USER_INFO", "");
+        if (userInfo.isEmpty()){
+            Navigation.findNavController(view).navigate(R.id.loginFragment, null);
+        } else {
+            Bundle bundle = new Bundle();
+            bundle.putString("USER_INFO", userInfo);
+            Navigation.findNavController(view).navigate(R.id.listTopicFragment, bundle);
+        }
     }
 
     @Override

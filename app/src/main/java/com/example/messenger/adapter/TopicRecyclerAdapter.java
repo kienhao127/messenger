@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.example.messenger.R;
 import com.example.messenger.model.Topic;
+import com.example.messenger.model.User;
 import com.example.messenger.utils.TimeUtils;
 
 import java.util.ArrayList;
@@ -50,8 +51,19 @@ public class TopicRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
         topicHolder.textViewSendTime.setText(TimeUtils.getRelativeTimeSpanString(((Topic) topics.get(i)).sendTime));
 //        topicHolder.imageViewAvatar
 //        topicHolder.imageViewUnreadDot
-        topicHolder.textViewName.setText(topics.get(i).user.name);
+        topicHolder.textViewName.setText(topicName(topics.get(i).users));
         topicHolder.textViewLastMess.setText(topics.get(i).lastMess);
+    }
+
+    private String topicName(User users[]){
+        String topicName = "";
+        for (int i = 0; i < users.length; i++){
+            topicName += users[i].name;
+            if (i < users.length-1){
+                topicName += ", ";
+            }
+        }
+        return topicName;
     }
 
     @Override

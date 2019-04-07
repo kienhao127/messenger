@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="45dp"
+    android:layout_margin="10dp">
+    <ImageView
+        android:id="@+id/imageViewAvatar"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:src="@drawable/user_placeholder"/>
+    <TextView
+        android:id="@+id/textViewFullname"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:text="Tên người dùng"
+        android:layout_toRightOf="@+id/imageViewAvatar"
+        android:layout_marginLeft="10dp"
+        android:textSize="16dp"
+        android:textStyle="bold"
+        android:textColor="#000"/>
+    <ImageView
+        android:id="@+id/send_button"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:src="@drawable/send"
+        android:padding="5dp"
+        android:layout_alignParentRight="true"/>
+</RelativeLayout>

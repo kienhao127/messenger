@@ -14,4 +14,11 @@ public class User {
     public User(){
 
     }
+
+    public User(User user){
+        this.avatar = user.avatar;
+        this.id = user.id;
+        this.name = user.name;
+
+    }
 }
