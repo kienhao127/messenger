@@ -16,6 +16,9 @@ import android.widget.TextView;
 import com.example.messenger.model.User;
 import com.example.messenger.model.response.LoginResponse;
 import com.example.messenger.utils.HttpUtils;
+import com.example.messenger.utils.UserUtils;
+import com.github.nkzawa.socketio.client.IO;
+import com.github.nkzawa.socketio.client.Socket;
 import com.google.gson.Gson;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -23,11 +26,23 @@ import com.loopj.android.http.RequestParams;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.net.URISyntaxException;
+
+import androidx.navigation.Navigation;
 import cz.msebera.android.httpclient.Header;
 
 public class LoginFragment extends Fragment implements View.OnClickListener {
 
-    private TextView textViewHello;
+    private User currentUser;
+
+    private Socket mSocket;
+    {
+        try {
+            mSocket = IO.socket("http://192.168.1.6:3000");
+        } catch (URISyntaxException e) {
+            Log.e("Socket Exception", e.toString());
+        }
+    }
 
     public LoginFragment() {
         // Required empty public constructor
@@ -36,6 +51,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mSocket.connect();
     }
 
     @Override
@@ -73,7 +89,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
 
     private void onLoginPress(){
         RequestParams rp = new RequestParams();
-        rp.add("email", "haolk"); rp.add("password", "123456");
+        rp.add("email", getEmail().getText().toString()); rp.add("password", getPassword().getText().toString());
 
         HttpUtils.post("user/login", rp, new JsonHttpResponseHandler() {
             @Override
@@ -90,6 +106,9 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
                 SharedPreferences.Editor editor = sharedPref.edit();
                 editor.putString("USER_INFO", gson.toJson(user));
                 editor.commit();
+
+                mSocket.emit("USER_LOGIN", user.id);
+                Navigation.findNavController(getView()).navigate(R.id.listTopicFragment);
             }
 
             @Override

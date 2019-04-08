@@ -16,10 +16,26 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.example.messenger.model.User;
+import com.example.messenger.utils.UserUtils;
+import com.github.nkzawa.socketio.client.IO;
+import com.github.nkzawa.socketio.client.Socket;
+
+import java.net.URISyntaxException;
+
 import androidx.navigation.Navigation;
 
 
 public class StartFragment extends Fragment {
+
+    private Socket mSocket;
+    {
+        try {
+            mSocket = IO.socket("http://192.168.1.6:3000");
+        } catch (URISyntaxException e) {
+            Log.e("Socket Exception", e.toString());
+        }
+    }
 
     public StartFragment() {
         // Required empty public constructor
@@ -28,6 +44,7 @@ public class StartFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mSocket.connect();
 
     }
 
@@ -44,6 +61,8 @@ public class StartFragment extends Fragment {
         } else {
             Bundle bundle = new Bundle();
             bundle.putString("USER_INFO", userInfo);
+            User currentUser = UserUtils.getCurrentUser(getActivity());
+            mSocket.emit("USER_LOGIN", currentUser.id);
             Navigation.findNavController(view).navigate(R.id.listTopicFragment, bundle);
         }
     }

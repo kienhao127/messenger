@@ -28,6 +28,7 @@ import android.widget.Toast;
 import com.example.messenger.adapter.MessageRecyclerAdapter;
 import com.example.messenger.model.Message;
 import com.example.messenger.model.User;
+import com.example.messenger.utils.UserUtils;
 import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
@@ -58,6 +59,8 @@ public class MessageFragment extends Fragment {
     private RecyclerView.LayoutManager layoutManager;
     Gson gson = new Gson();
 
+    private User currentUser;
+
     private String topicId = "";
     private String topicName = "";
 
@@ -83,7 +86,9 @@ public class MessageFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         mSocket.connect();
-        mSocket.on("chat message", onNewMessage);
+        mSocket.on("MESSAGE_FROM_SERVER", onNewMessage);
+
+        currentUser = UserUtils.getCurrentUser(getActivity());
 
         messages.add(new Message(1, 1, new User("", 1, "Hào"), "Tin nhắn 1", 1552905040998.0, "1_2"));
         messages.add(new Message(1, 1, new User("", 2, "Hào"), "Tin nhắn 2", 1552905040998.0, "1_2"));
@@ -207,7 +212,7 @@ public class MessageFragment extends Fragment {
 
         layoutManager = new LinearLayoutManager(getContext());
         rvListMessage.setLayoutManager(layoutManager);
-        adapter = new MessageRecyclerAdapter(messages);
+        adapter = new MessageRecyclerAdapter(messages, currentUser);
         rvListMessage.scrollToPosition(adapter.getItemCount() - 1);
         rvListMessage.setAdapter(adapter);
 
@@ -234,13 +239,13 @@ public class MessageFragment extends Fragment {
     private void sendMessage(View v){
         Log.d("Send", "Clicked");
         String content = editText.getText().toString();
-        Message newMessage = new Message(1, 1, new User("", 1, "Hào"), content, new Date().getTime(), "1_2");
+        Message newMessage = new Message(1, 1, currentUser, content, new Date().getTime(), "2_12");
         messages.add(newMessage);
         adapter.notifyDataSetChanged();
         editText.setText("");
         rvListMessage.smoothScrollToPosition(messages.size()-1);
         String json = gson.toJson(newMessage);
-        mSocket.emit("chat message", json);
+        mSocket.emit("MESSAGE_FROM_USER", json);
     }
 
 

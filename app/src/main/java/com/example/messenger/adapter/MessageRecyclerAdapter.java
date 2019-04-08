@@ -11,7 +11,9 @@ import android.widget.TextView;
 
 import com.example.messenger.R;
 import com.example.messenger.model.Message;
+import com.example.messenger.model.User;
 import com.example.messenger.utils.TimeUtils;
+import com.example.messenger.utils.UserUtils;
 
 import java.util.ArrayList;
 
@@ -19,10 +21,12 @@ public class MessageRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
 
     private ArrayList<Message> messages = new ArrayList<>();
+    private User currentUser = new User();
     private OnItemLongClickListener mItemLongClickListener;
 
-    public MessageRecyclerAdapter(ArrayList<Message> messages) {
+    public MessageRecyclerAdapter(ArrayList<Message> messages, User currentUser) {
         this.messages = messages;
+        this.currentUser = currentUser;
     }
 
     @Override
@@ -38,7 +42,7 @@ public class MessageRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             //nếu Type === TEXT
             case Message.TEXT: {
                 //Nếu userID === currentUserID ? layout_message_text_owner : layout_message_text
-                if (messages.get(i).user.id == 1) {
+                if (messages.get(i).user.id == currentUser.id) {
                     return new TextHolder(LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_message_text_owner, viewGroup, false));
                 } else  {
                     return new TextHolder(LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_message_text, viewGroup, false));
@@ -54,7 +58,7 @@ public class MessageRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         Log.d("onBindViewHolder", messages.get(i).content);
         switch (messages.get(i).type) {
             case Message.TEXT: {
-                if (messages.get(i).user.id == 1) {
+                if (messages.get(i).user.id == currentUser.id) {
                     TextHolder textHolder = (TextHolder) viewHolder;
                     textHolder.textViewContent.setText(messages.get(i).content);
                     textHolder.textViewSendTime.setText(TimeUtils.getRelativeTimeSpanString(((Message) messages.get(i)).sendTime));
@@ -66,7 +70,7 @@ public class MessageRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 //                    textHolder.imageViewAvatar
                     textHolder.textViewContent.setText(messages.get(i).content);
                     textHolder.textViewSendTime.setText(TimeUtils.getRelativeTimeSpanString(((Message) messages.get(i)).sendTime));
-                    if (i-1 >= 0 && messages.get(i-1).user.id != 1){
+                    if (i-1 >= 0 && messages.get(i-1).user.id != currentUser.id){
                         textHolder.imageViewAvatar.setVisibility(View.INVISIBLE);
                     }
                     if ((i-1 >= 0 && TimeUtils.CompareDate(messages.get(i-1).sendTime, messages.get(i).sendTime, 15)) || i==0){

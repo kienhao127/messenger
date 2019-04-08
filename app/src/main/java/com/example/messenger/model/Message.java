@@ -12,15 +12,15 @@ public class Message {
     public User user;
     public String content;
     public double sendTime;
-    public String topicID;
+    public String topicId;
 
-    public Message(int type, int id, User user, String content, double sendTime, String topicID) {
+    public Message(int type, int id, User user, String content, double sendTime, String topicId) {
         this.type = type;
         this.id = id;
         this.user = user;
         this.content = content;
         this.sendTime = sendTime;
-        this.topicID = topicID;
+        this.topicId = topicId;
     }
 
     public Message() {

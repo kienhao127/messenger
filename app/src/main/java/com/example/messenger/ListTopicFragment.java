@@ -28,6 +28,9 @@ import com.example.messenger.model.response.GetTopicResponse;
 import com.example.messenger.model.response.SearchUserResponse;
 import com.example.messenger.utils.HttpUtils;
 import com.example.messenger.utils.UserUtils;
+import com.github.nkzawa.emitter.Emitter;
+import com.github.nkzawa.socketio.client.IO;
+import com.github.nkzawa.socketio.client.Socket;
 import com.google.gson.Gson;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -35,6 +38,7 @@ import com.loopj.android.http.RequestParams;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -57,6 +61,17 @@ public class ListTopicFragment extends Fragment {
     private User[] users;
     private AlertDialog dialog;
 
+    private User currentUser;
+
+    private Socket mSocket;
+    {
+        try {
+            mSocket = IO.socket("http://192.168.1.6:3000");
+        } catch (URISyntaxException e) {
+            Log.e("Socket Exception", e.toString());
+        }
+    }
+
     public ListTopicFragment() {
         // Required empty public constructor
     }
@@ -65,6 +80,9 @@ public class ListTopicFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        currentUser = UserUtils.getCurrentUser(getActivity());
+        mSocket.connect();
+        mSocket.on("MESSAGE_FROM_SERVER", onNewMessage);
 
         User[] users1 = {new User("", 2, "Nguyễn Văn A")};
         User[] users2 = {new User("", 3, "Nguyễn Văn B")};
@@ -249,4 +267,18 @@ public class ListTopicFragment extends Fragment {
             }
         });
     }
+
+    private Emitter.Listener onNewMessage = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    String data = String.valueOf(args[0]);
+                    Log.d("Message", data);
+                    Toast.makeText(getContext(), data, Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+    };
 }
