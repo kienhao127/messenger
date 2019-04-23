@@ -28,6 +28,7 @@ import android.widget.Toast;
 import com.example.messenger.adapter.MessageRecyclerAdapter;
 import com.example.messenger.model.Message;
 import com.example.messenger.model.User;
+import com.example.messenger.utils.ConstUtils;
 import com.example.messenger.utils.UserUtils;
 import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.IO;
@@ -68,7 +69,7 @@ public class MessageFragment extends Fragment {
     private Socket mSocket;
     {
         try {
-            mSocket = IO.socket("http://192.168.1.6:3000");
+            mSocket = IO.socket(ConstUtils.BASE_URL);
         } catch (URISyntaxException e) {
             Log.e("Socket Exception", e.toString());
         }
@@ -248,11 +249,6 @@ public class MessageFragment extends Fragment {
         mSocket.emit("MESSAGE_FROM_USER", json);
     }
 
-
-
-
-
-
     public void hideKeyboard(View view) {
         InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
@@ -278,11 +274,18 @@ public class MessageFragment extends Fragment {
     private Emitter.Listener onNewMessage = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
+            if(getActivity() == null)
+                return;
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     String data = String.valueOf(args[0]);
-                    Log.d("Message", data);
+                    Message newMessage = gson.fromJson(data, Message.class);
+                    if (newMessage.topicId.equals(topicId)){
+                        messages.add(newMessage);
+                        adapter.notifyDataSetChanged();
+                        rvListMessage.smoothScrollToPosition(messages.size()-1);
+                    }
                 }
             });
         }

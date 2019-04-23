@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.example.messenger.model.User;
 import com.example.messenger.model.response.LoginResponse;
+import com.example.messenger.utils.ConstUtils;
 import com.example.messenger.utils.HttpUtils;
 import com.example.messenger.utils.UserUtils;
 import com.github.nkzawa.socketio.client.IO;
@@ -38,7 +39,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
     private Socket mSocket;
     {
         try {
-            mSocket = IO.socket("http://192.168.1.6:3000");
+            mSocket = IO.socket(ConstUtils.BASE_URL);
         } catch (URISyntaxException e) {
             Log.e("Socket Exception", e.toString());
         }

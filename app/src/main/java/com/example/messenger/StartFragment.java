@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.messenger.model.User;
+import com.example.messenger.utils.ConstUtils;
 import com.example.messenger.utils.UserUtils;
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
@@ -31,7 +32,7 @@ public class StartFragment extends Fragment {
     private Socket mSocket;
     {
         try {
-            mSocket = IO.socket("http://192.168.1.6:3000");
+            mSocket = IO.socket(ConstUtils.BASE_URL);
         } catch (URISyntaxException e) {
             Log.e("Socket Exception", e.toString());
         }

@@ -1,5 +1,6 @@
 package com.example.messenger.adapter;
 
+import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -13,6 +14,7 @@ import com.example.messenger.R;
 import com.example.messenger.model.Topic;
 import com.example.messenger.model.User;
 import com.example.messenger.utils.TimeUtils;
+import com.example.messenger.utils.UserUtils;
 
 import java.util.ArrayList;
 
@@ -21,6 +23,7 @@ public class TopicRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     private ArrayList<Topic> topics = new ArrayList<>();
     private OnItemClickListener onItemClickListener;
+    private Activity activity;
 
     public interface OnItemClickListener {
         void onItemClick(View view, int position);
@@ -30,8 +33,9 @@ public class TopicRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
         this.onItemClickListener = onItemClickListener;
     }
 
-    public TopicRecyclerAdapter(ArrayList<Topic> topics) {
+    public TopicRecyclerAdapter(Activity activity, ArrayList<Topic> topics) {
         this.topics = topics;
+        this.activity = activity;
     }
 
     @Override
@@ -51,17 +55,20 @@ public class TopicRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
         topicHolder.textViewSendTime.setText(TimeUtils.getRelativeTimeSpanString(((Topic) topics.get(i)).sendTime));
 //        topicHolder.imageViewAvatar
 //        topicHolder.imageViewUnreadDot
-        topicHolder.textViewName.setText(topicName(topics.get(i).users));
+        topicHolder.textViewName.setText(topicName(topics.get(i).name));
         topicHolder.textViewLastMess.setText(topics.get(i).lastMess);
     }
 
-    private String topicName(User users[]){
+    private String topicName(String[] name){
         String topicName = "";
-        for (int i = 0; i < users.length; i++){
-            topicName += users[i].name;
-            if (i < users.length-1){
+        for (int i = 0; i < name.length; i++){
+            if (i != 0 && !name[i].equals(UserUtils.getCurrentUser(activity).name) && !topicName.isEmpty()){
                 topicName += ", ";
             }
+            if (!name[i].equals(UserUtils.getCurrentUser(activity).name)) {
+                topicName += name[i];
+            }
+
         }
         return topicName;
     }

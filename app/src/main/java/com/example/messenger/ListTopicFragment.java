@@ -26,6 +26,7 @@ import com.example.messenger.model.Topic;
 import com.example.messenger.model.User;
 import com.example.messenger.model.response.GetTopicResponse;
 import com.example.messenger.model.response.SearchUserResponse;
+import com.example.messenger.utils.ConstUtils;
 import com.example.messenger.utils.HttpUtils;
 import com.example.messenger.utils.UserUtils;
 import com.github.nkzawa.emitter.Emitter;
@@ -62,11 +63,12 @@ public class ListTopicFragment extends Fragment {
     private AlertDialog dialog;
 
     private User currentUser;
+    Gson gson;
 
     private Socket mSocket;
     {
         try {
-            mSocket = IO.socket("http://192.168.1.6:3000");
+            mSocket = IO.socket(ConstUtils.BASE_URL);
         } catch (URISyntaxException e) {
             Log.e("Socket Exception", e.toString());
         }
@@ -79,17 +81,18 @@ public class ListTopicFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        gson = new Gson();
         currentUser = UserUtils.getCurrentUser(getActivity());
         mSocket.connect();
-        mSocket.on("MESSAGE_FROM_SERVER", onNewMessage);
+        mSocket.on("TOPIC_FROM_SERVER", onNewTopic);
 
-        User[] users1 = {new User("", 2, "Nguyễn Văn A")};
-        User[] users2 = {new User("", 3, "Nguyễn Văn B")};
-        User[] users3 = {new User("", 4, "Nguyễn Văn C")};
-        topics.add(new Topic(users1, "Tin nhắn cuối cùng", new Date().getTime(), "1_2", false ));
-        topics.add(new Topic(users2, "Tin nhắn cuối cùng", new Date().getTime(), "1_3", false ));
-        topics.add(new Topic(users3, "Tin nhắn cuối cùng", new Date().getTime(), "1_4", false ));
+        String[] name1 = {"Nguyễn Văn A", "Nguyễn Văn B"};
+        String[] name2 = {"Nguyễn Văn C", "Nguyễn Văn D"};
+        String[] name3 = {"Nguyễn Văn E"};
+        topics.add(new Topic(name1, "Tin nhắn cuối cùng", new Date().getTime(), "1_2", false ));
+        topics.add(new Topic(name2, "Tin nhắn cuối cùng", new Date().getTime(), "1_2", false ));
+        topics.add(new Topic(name3, "Tin nhắn cuối cùng", new Date().getTime(), "1_2", false ));
+
     }
 
     @Override
@@ -115,13 +118,16 @@ public class ListTopicFragment extends Fragment {
 
         layoutManager = new LinearLayoutManager(getContext());
         rvListTopic.setLayoutManager(layoutManager);
-        adapter = new TopicRecyclerAdapter(topics);
+        adapter = new TopicRecyclerAdapter(getActivity(), topics);
         adapter.SetOnItemClickListener(new TopicRecyclerAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
+                String topicName =getTopicName(topics.get(position).name);
+                String topicId = topics.get(position).topicId;
                 Bundle bundle = new Bundle();
-                bundle.putString("topicID", topics.get(position).topicID);
-                Navigation.findNavController(view).navigate(R.id.messageFragment, bundle);
+                bundle.putString("topicId", topicId);
+                bundle.putString("topicName", topicName);
+                Navigation.findNavController(getView()).navigate(R.id.messageFragment, bundle);
             }
         });
         rvListTopic.setAdapter(adapter);
@@ -179,7 +185,6 @@ public class ListTopicFragment extends Fragment {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 Log.d("SEARCH_USER_RESPONSE", String.valueOf(response));
-                Gson gson = new Gson();
 
                 SearchUserResponse searchUserResponse = gson.fromJson(String.valueOf(response), SearchUserResponse.class);
                 searchLayoutManager = new LinearLayoutManager(getContext());
@@ -229,7 +234,6 @@ public class ListTopicFragment extends Fragment {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 Log.d("GET_TOPIC_RESPONSE", String.valueOf(response));
-                Gson gson = new Gson();
 
                 GetTopicResponse getTopicResponse = gson.fromJson(String.valueOf(response), GetTopicResponse.class);
                 User currentUser = UserUtils.getCurrentUser(getActivity());
@@ -242,17 +246,8 @@ public class ListTopicFragment extends Fragment {
                     bundle.putString("topicName", topicName);
                     Navigation.findNavController(getView()).navigate(R.id.messageFragment, bundle);
                 } else {
-                    String topicName = "";
-                    String topicId = getTopicResponse.topic.topicID;
-                    User users[] = getTopicResponse.topic.users;
-                    for (int i = 0; i < users.length; i++){
-                        if (users[i].id != currentUser.id){
-                            topicName += users[i].name;
-                            if (i < users.length-1){
-                                topicName += ",";
-                            }
-                        }
-                    }
+                    String topicName =getTopicName(getTopicResponse.topic.name);
+                    String topicId = getTopicResponse.topic.topicId;
                     Bundle bundle = new Bundle();
                     bundle.putString("topicId", topicId);
                     bundle.putString("topicName", topicName);
@@ -268,7 +263,21 @@ public class ListTopicFragment extends Fragment {
         });
     }
 
-    private Emitter.Listener onNewMessage = new Emitter.Listener() {
+    private String getTopicName(String[] name){
+        String topicName = "";
+        for (int i = 0; i < name.length; i++){
+            if (i != 0 && !name[i].equals(UserUtils.getCurrentUser(getActivity()).name) && !topicName.isEmpty()){
+                topicName += ", ";
+            }
+            if (!name[i].equals(UserUtils.getCurrentUser(getActivity()).name)) {
+                topicName += name[i];
+            }
+        }
+        return topicName;
+    }
+
+
+    private Emitter.Listener onNewTopic = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
             getActivity().runOnUiThread(new Runnable() {
@@ -277,6 +286,19 @@ public class ListTopicFragment extends Fragment {
                     String data = String.valueOf(args[0]);
                     Log.d("Message", data);
                     Toast.makeText(getContext(), data, Toast.LENGTH_SHORT).show();
+                    Topic topic = gson.fromJson(data, Topic.class);
+                    for (int i = 0; i < topics.size(); i++){
+                        if (topics.get(i).topicId.equals(topic.topicId)){
+                            topics.remove(i);
+                            topics.add(0, topic);
+                            adapter.notifyDataSetChanged();
+                            rvListTopic.smoothScrollToPosition(0);
+                            return;
+                        }
+                    }
+                    topics.add(0, topic);
+                    adapter.notifyDataSetChanged();
+                    rvListTopic.smoothScrollToPosition(0);
                 }
             });
         }

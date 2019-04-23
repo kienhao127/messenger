@@ -5,7 +5,7 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
 public class HttpUtils {
-    private static final String BASE_URL = "http://192.168.1.6:3000/";
+    private static final String BASE_URL = ConstUtils.BASE_URL;
 
     private static AsyncHttpClient client = new AsyncHttpClient();
 

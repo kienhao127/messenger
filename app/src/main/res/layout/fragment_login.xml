@@ -46,6 +46,7 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:hint="Password"
+            android:inputType="textPassword"
             android:textColor="#FFF"
             android:textColorHint="#DDD"
             android:drawableLeft="@drawable/password"
