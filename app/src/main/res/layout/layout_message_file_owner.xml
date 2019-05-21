@@ -39,5 +39,13 @@
             android:textSize="15dp"
             android:gravity="center|left"
             android:textColor="#FFF" />
+
+        <ImageView
+            android:layout_centerVertical="true"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginRight="5dp"
+            android:src="@drawable/download_icon"
+            android:layout_toLeftOf="@id/textViewContent"/>
     </RelativeLayout>
 </LinearLayout>

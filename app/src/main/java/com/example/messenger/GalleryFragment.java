@@ -18,7 +18,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.messenger.adapter.GalleryRecyclerAdapter;
-import com.example.messenger.fragmentCallback.GalleryFragmentCallback;
 import com.example.messenger.model.SharedViewModel;
 
 import java.util.ArrayList;

@@ -3,6 +3,7 @@ package com.example.messenger.adapter;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Paint;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -31,6 +32,7 @@ public class MessageRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     private ArrayList<Message> messages = new ArrayList<>();
     private User currentUser = new User();
     private OnItemLongClickListener mItemLongClickListener;
+    private OnItemClickListener mItemClickListener;
     private Context context;
 
     public MessageRecyclerAdapter(ArrayList<Message> messages, User currentUser, Context context) {
@@ -142,6 +144,7 @@ public class MessageRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                 if (messages.get(i).user.id == currentUser.id) {
                     FileHolder fileHolder = (FileHolder) viewHolder;
                     fileHolder.textViewContent.setText(((MessageFile) messages.get(i)).filename);
+                    fileHolder.textViewContent.setPaintFlags(fileHolder.textViewContent.getPaintFlags()| Paint.UNDERLINE_TEXT_FLAG);
                     fileHolder.textViewSendTime.setText(TimeUtils.getRelativeTimeSpanString((messages.get(i)).sendTime));
                     if ((i-1 >= 0 && TimeUtils.CompareDate(messages.get(i-1).sendTime, messages.get(i).sendTime, 15)) || i==0){
                         fileHolder.textViewSendTime.setVisibility(View.VISIBLE);
@@ -150,6 +153,7 @@ public class MessageRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                     FileHolder fileHolder = (FileHolder) viewHolder;
 //                    textHolder.imageViewAvatar
                     fileHolder.textViewContent.setText(((MessageFile) messages.get(i)).filename);
+                    fileHolder.textViewContent.setPaintFlags(fileHolder.textViewContent.getPaintFlags()| Paint.UNDERLINE_TEXT_FLAG);
                     fileHolder.textViewSendTime.setText(TimeUtils.getRelativeTimeSpanString((messages.get(i)).sendTime));
                     if (i-1 >= 0 && messages.get(i-1).user.id != currentUser.id){
                         fileHolder.imageViewAvatar.setVisibility(View.INVISIBLE);
@@ -175,6 +179,14 @@ public class MessageRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
     public void SetOnItemLongClickListener(final OnItemLongClickListener mItemLongClickListener) {
         this.mItemLongClickListener = mItemLongClickListener;
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(View view, int position);
+    }
+
+    public void SetOnItemClickListener(final OnItemClickListener mItemClickListener) {
+        this.mItemClickListener = mItemClickListener;
     }
 
 
@@ -255,10 +267,8 @@ public class MessageRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             textViewContent.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (textViewSendTime.getVisibility() == View.VISIBLE){
-                        textViewSendTime.setVisibility(View.GONE);
-                    } else {
-                        textViewSendTime.setVisibility(View.VISIBLE);
+                    if (mItemClickListener!=null){
+                        mItemClickListener.onItemClick(view, getAdapterPosition());
                     }
                 }
             });

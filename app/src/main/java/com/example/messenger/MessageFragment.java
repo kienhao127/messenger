@@ -5,7 +5,9 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -240,6 +242,15 @@ public class MessageFragment extends Fragment {
         layoutManager = new LinearLayoutManager(getContext());
         rvListMessage.setLayoutManager(layoutManager);
         adapter = new MessageRecyclerAdapter(messages, currentUser, getContext());
+
+        adapter.SetOnItemClickListener(new MessageRecyclerAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                Uri uri = Uri.parse(BASE_URL + "download/" + ((MessageFile) messages.get(position)).filename); // missing 'http://' will cause crashed
+                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                startActivity(intent);
+            }
+        });
         rvListMessage.scrollToPosition(adapter.getItemCount() - 1);
         rvListMessage.setAdapter(adapter);
 

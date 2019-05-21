@@ -16,8 +16,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.messenger.adapter.FilesRecyclerAdapter;
-import com.example.messenger.fragmentCallback.FilesFragmentCallback;
-import com.example.messenger.fragmentCallback.GalleryFragmentCallback;
 import com.example.messenger.model.LocalFile;
 import com.example.messenger.model.SharedViewModel;
 import com.example.messenger.utils.FileUtils;
