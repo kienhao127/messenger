@@ -1,0 +1,33 @@
+<android.support.percent.PercentRelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:background="#000"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp"
+    android:paddingTop="5dp"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:gravity="center_horizontal"
+        android:id="@+id/textViewSendTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="17/08/25 09:47"
+        android:textColor="#DDD"
+        android:layout_marginBottom="5dp"
+        android:visibility="visible"/>
+
+    <ImageView
+        android:id="@+id/messageImage"
+        android:layout_marginLeft="5dp"
+        app:layout_widthPercent="75%"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/textViewSendTime"
+        android:layout_toRightOf="@id/imageViewAvatar"
+        android:layout_alignParentRight="true"
+        android:background="@drawable/background_image"
+        android:src="@drawable/emoji"
+        />
+
+</android.support.percent.PercentRelativeLayout>

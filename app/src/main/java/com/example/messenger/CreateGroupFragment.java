@@ -97,10 +97,13 @@ public class CreateGroupFragment extends Fragment {
         okButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Bundle bundle = new Bundle();
+                bundle.putString("topicId", "2_12_22");
+                bundle.putString("topicName", "Tên nhóm");
                 Navigation.findNavController(getView())
                         .navigate(
                                 R.id.action_createGroupFragment_to_messageFragment,
-                                null,
+                                bundle,
                                 new NavOptions.Builder()
                                         .setPopUpTo(R.id.createGroupFragment,
                                                 true).build());

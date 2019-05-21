@@ -33,6 +33,7 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.9.0'
     implementation 'com.github.nkzawa:socket.io-client:0.3.0'
     implementation 'com.loopj.android:android-async-http:1.4.9'
+    implementation 'com.android.support:percent:25.1.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'

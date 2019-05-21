@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="10dp"
+    android:background="#000"
+    android:id="@+id/filesItemLayout">
+    <ImageView
+        android:id="@+id/imageViewFileType"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:src="@drawable/other"
+        android:layout_marginRight="15dp"/>
+
+    <TextView
+        android:id="@+id/textViewFilename"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_toRightOf="@+id/imageViewFileType"
+        android:layout_centerVertical="true"
+        android:singleLine="true"
+        android:ellipsize="middle"
+        android:text="Tên file.other"
+        android:textColor="#FFF"
+        android:textSize="20dp" />
+</RelativeLayout>

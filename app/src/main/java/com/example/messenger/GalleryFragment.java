@@ -1,6 +1,7 @@
 package com.example.messenger;
 
 import android.app.Activity;
+import android.arch.lifecycle.ViewModelProviders;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -15,9 +16,10 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.example.messenger.adapter.GalleryRecyclerAdapter;
+import com.example.messenger.fragmentCallback.GalleryFragmentCallback;
+import com.example.messenger.model.SharedViewModel;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,6 +30,7 @@ public class GalleryFragment extends Fragment {
     private ArrayList<String> images;
     private GridLayoutManager layoutManager;
     private GalleryRecyclerAdapter adapter;
+    private SharedViewModel viewModel;
 
     public GalleryFragment() {
         // Required empty public constructor
@@ -37,6 +40,8 @@ public class GalleryFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         images = getAllShownImagesPath(getActivity());
+        viewModel = ViewModelProviders.of(getActivity()).get(SharedViewModel.class);
+        viewModel.setPath(null);
         Collections.reverse(images);
     }
 
@@ -68,7 +73,8 @@ public class GalleryFragment extends Fragment {
         adapter.setOnItemClickListener(new GalleryRecyclerAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                Toast.makeText(getContext(), images.get(position).toString(), Toast.LENGTH_SHORT).show();
+                viewModel.setPath(images.get(position));
+                getActivity().onBackPressed();
             }
         });
 

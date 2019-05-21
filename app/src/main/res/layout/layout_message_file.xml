@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp"
+    android:paddingTop="5dp"
+    android:orientation="vertical">
+    <TextView
+        android:gravity="center_horizontal"
+        android:id="@+id/textViewSendTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="17/08/25 09:47"
+        android:textColor="#DDD"
+        android:layout_marginBottom="5dp"
+        android:visibility="gone"/>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp">
+
+        <ImageView
+            android:id="@+id/imageViewAvatar"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/user_placeholder" />
+
+        <TextView
+            android:id="@+id/textViewContent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxWidth="300dp"
+            android:minHeight="40dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
+            android:layout_toEndOf="@+id/imageViewAvatar"
+            android:layout_toRightOf="@+id/imageViewAvatar"
+            android:background="@drawable/message_box"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="7dp"
+            android:paddingBottom="7dp"
+            android:layout_centerVertical="true"
+            android:textSize="15dp"
+            android:text="Nội dung tin nhắn"
+            android:gravity="center|left"
+            android:textColor="#FFF" />
+    </RelativeLayout>
+</LinearLayout>

@@ -57,6 +57,9 @@
             app:destination="@id/listTopicFragment"
             app:popUpTo="@+id/listTopicFragment"
             app:popUpToInclusive="true"/>
+        <action
+            android:id="@+id/action_messageFragment_to_filesFragment"
+            app:destination="@id/filesFragment" />
     </fragment>
     <fragment
         android:id="@+id/galleryFragment"
@@ -72,4 +75,9 @@
             android:id="@+id/action_createGroupFragment_to_messageFragment"
             app:destination="@id/messageFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/filesFragment"
+        android:name="com.example.messenger.FilesFragment"
+        android:label="fragment_files"
+        tools:layout="@layout/fragment_files" />
 </navigation>

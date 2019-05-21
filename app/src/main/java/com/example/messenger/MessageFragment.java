@@ -3,8 +3,11 @@ package com.example.messenger;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -26,22 +29,27 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.example.messenger.adapter.MessageRecyclerAdapter;
+import com.example.messenger.model.LocalFile;
 import com.example.messenger.model.Message;
+import com.example.messenger.model.MessageFile;
+import com.example.messenger.model.MessagePhoto;
+import com.example.messenger.model.SharedViewModel;
 import com.example.messenger.model.User;
-import com.example.messenger.utils.ConstUtils;
+import com.example.messenger.utils.FileUtils;
+import com.example.messenger.utils.ImageUtils;
 import com.example.messenger.utils.UserUtils;
 import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
 import com.google.gson.Gson;
 
-import org.json.JSONObject;
-
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Date;
 
 import androidx.navigation.Navigation;
+
+import static com.example.messenger.utils.ConstUtils.BASE_URL;
 
 public class MessageFragment extends Fragment {
 
@@ -65,11 +73,13 @@ public class MessageFragment extends Fragment {
     private String topicId = "";
     private String topicName = "";
 
+    private SharedViewModel viewModel;
+
 
     private Socket mSocket;
     {
         try {
-            mSocket = IO.socket(ConstUtils.BASE_URL);
+            mSocket = IO.socket(BASE_URL);
         } catch (URISyntaxException e) {
             Log.e("Socket Exception", e.toString());
         }
@@ -175,6 +185,22 @@ public class MessageFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Log.d("Attach", "Clicked");
+                hideKeyboard(v);
+                if ((ContextCompat.checkSelfPermission(getContext(),
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) && (ContextCompat.checkSelfPermission(getContext(),
+                        Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
+                    if ((ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE)) && (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
+                            Manifest.permission.READ_EXTERNAL_STORAGE))) {
+
+                    } else {
+                        ActivityCompat.requestPermissions(getActivity(),
+                                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE},
+                                REQUEST_PERMISSIONS);
+                    }
+                }else {
+                    Navigation.findNavController(getView()).navigate(R.id.filesFragment);
+                }
             }
         });
 
@@ -213,7 +239,7 @@ public class MessageFragment extends Fragment {
 
         layoutManager = new LinearLayoutManager(getContext());
         rvListMessage.setLayoutManager(layoutManager);
-        adapter = new MessageRecyclerAdapter(messages, currentUser);
+        adapter = new MessageRecyclerAdapter(messages, currentUser, getContext());
         rvListMessage.scrollToPosition(adapter.getItemCount() - 1);
         rvListMessage.setAdapter(adapter);
 
@@ -240,7 +266,7 @@ public class MessageFragment extends Fragment {
     private void sendMessage(View v){
         Log.d("Send", "Clicked");
         String content = editText.getText().toString();
-        Message newMessage = new Message(1, 1, currentUser, content, new Date().getTime(), "2_12");
+        Message newMessage = new Message(Message.TEXT, 1, currentUser, content, new Date().getTime(), topicId);
         messages.add(newMessage);
         adapter.notifyDataSetChanged();
         editText.setText("");
@@ -280,14 +306,72 @@ public class MessageFragment extends Fragment {
                 @Override
                 public void run() {
                     String data = String.valueOf(args[0]);
-                    Message newMessage = gson.fromJson(data, Message.class);
-                    if (newMessage.topicId.equals(topicId)){
-                        messages.add(newMessage);
-                        adapter.notifyDataSetChanged();
-                        rvListMessage.smoothScrollToPosition(messages.size()-1);
+                    int messageType = Integer.valueOf(args[1].toString());
+                    switch (messageType){
+                        case Message.TEXT:
+                            Message message = gson.fromJson(data, Message.class);
+                            if (message.topicId.equals(topicId)){
+                                messages.add(message);
+                                adapter.notifyDataSetChanged();
+                                rvListMessage.smoothScrollToPosition(messages.size()-1);
+                            }
+                            break;
+                        case Message.FILE:
+                            MessageFile messageFile = gson.fromJson(data, MessageFile.class);
+                            if (messageFile.topicId.equals(topicId)){
+                                messages.add(messageFile);
+                                adapter.notifyDataSetChanged();
+                                rvListMessage.smoothScrollToPosition(messages.size()-1);
+                            }
+                            break;
+                        case Message.IMAGE:
+                            MessagePhoto messagePhoto = gson.fromJson(data, MessagePhoto.class);
+                            if (messagePhoto.topicId.equals(topicId)){
+                                messages.add(messagePhoto);
+                                adapter.notifyDataSetChanged();
+                                rvListMessage.smoothScrollToPosition(messages.size()-1);
+                            }
+                            break;
                     }
+
                 }
             });
         }
     };
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        viewModel = ViewModelProviders.of(getActivity()).get(SharedViewModel.class);
+        viewModel.getPath().observe(getViewLifecycleOwner(), new Observer<CharSequence>() {
+            @Override
+            public void onChanged(@Nullable CharSequence charSequence) {
+                if (charSequence != null){
+                    String imageBase64 = ImageUtils.imagePathToBase64(charSequence.toString());
+                    Log.d("IMAGE_BASE64", imageBase64);
+                    Message newMessage = new MessagePhoto(Message.IMAGE, 1, currentUser, imageBase64, new Date().getTime(), topicId, "");
+                    messages.add(newMessage);
+                    adapter.notifyDataSetChanged();
+                    rvListMessage.smoothScrollToPosition(messages.size()-1);
+                    String json = gson.toJson(newMessage);
+                    mSocket.emit("MESSAGE_FROM_USER", json);
+                }
+            }
+        });
+        viewModel.getLocalFile().observe(getViewLifecycleOwner(), new Observer<LocalFile>() {
+            @Override
+            public void onChanged(@Nullable LocalFile localFile) {
+                if (localFile != null){
+                    String fileBase64 = FileUtils.fileToBase64(localFile.path);
+                    Log.d("FILE_BASE64", fileBase64);
+                    Message newMessage = new MessageFile(Message.FILE, 1, currentUser, fileBase64, new Date().getTime(), topicId, localFile.name, BASE_URL+localFile.name);
+                    messages.add(newMessage);
+                    adapter.notifyDataSetChanged();
+                    rvListMessage.smoothScrollToPosition(messages.size()-1);
+                    String json = gson.toJson(newMessage);
+                    mSocket.emit("MESSAGE_FROM_USER", json);
+                }
+            }
+        });
+    }
 }
