@@ -41,6 +41,7 @@ public class GalleryFragment extends Fragment {
         images = getAllShownImagesPath(getActivity());
         viewModel = ViewModelProviders.of(getActivity()).get(SharedViewModel.class);
         viewModel.setPath(null);
+        viewModel.setLocalFile(null);
         Collections.reverse(images);
     }
 

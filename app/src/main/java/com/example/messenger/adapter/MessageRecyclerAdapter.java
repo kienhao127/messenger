@@ -109,6 +109,7 @@ public class MessageRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             case Message.IMAGE: {
                 if (messages.get(i).user.id == currentUser.id) {
                     ImageHolder imageHolder = (ImageHolder) viewHolder;
+                    imageHolder.messageImage.setClipToOutline(true);
                     if (!messages.get(i).content.isEmpty()){
                         imageHolder.messageImage.setImageBitmap(ImageUtils.base64ToBitmap(messages.get(i).content));
                     } else {
@@ -122,6 +123,7 @@ public class MessageRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                     }
                 } else {
                     ImageHolder imageHolder = (ImageHolder) viewHolder;
+                    imageHolder.messageImage.setClipToOutline(true);
 //                    textHolder.imageViewAvatar
                     if (!messages.get(i).content.isEmpty()) {
                         imageHolder.messageImage.setImageBitmap(ImageUtils.base64ToBitmap(messages.get(i).content));

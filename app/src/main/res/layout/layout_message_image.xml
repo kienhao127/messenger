@@ -16,7 +16,7 @@
         android:text="17/08/25 09:47"
         android:textColor="#DDD"
         android:layout_marginBottom="5dp"
-        android:visibility="visible"/>
+        android:visibility="gone"/>
 
     <ImageView
         android:id="@+id/imageViewAvatar"
@@ -29,12 +29,14 @@
     <ImageView
         android:id="@+id/messageImage"
         android:layout_marginLeft="5dp"
-        app:layout_widthPercent="75%"
+        app:layout_widthPercent="70%"
         android:layout_height="wrap_content"
         android:layout_below="@id/textViewSendTime"
         android:layout_toRightOf="@id/imageViewAvatar"
         android:background="@drawable/background_image"
-        android:src="@drawable/emoji"
+        android:src="@drawable/demo"
+        android:scaleType="fitXY"
+        android:adjustViewBounds="true"
         />
 
 </android.support.percent.PercentRelativeLayout>

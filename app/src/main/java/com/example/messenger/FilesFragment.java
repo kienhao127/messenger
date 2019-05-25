@@ -40,6 +40,7 @@ public class FilesFragment extends Fragment {
         super.onCreate(savedInstanceState);
         files = FileUtils.getAllFilesOfDir(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS));
         viewModel = ViewModelProviders.of(getActivity()).get(SharedViewModel.class);
+        viewModel.setPath(null);
         viewModel.setLocalFile(null);
         Collections.reverse(files);
     }

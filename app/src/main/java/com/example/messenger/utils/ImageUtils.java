@@ -18,8 +18,9 @@ public class ImageUtils {
         File imgFile = new  File(path);
 
         if(imgFile.exists()){
-
-            Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inSampleSize = 2; //Scale bitmap xuống 4 lần
+            Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath(), options);
             return myBitmap;
 
         }

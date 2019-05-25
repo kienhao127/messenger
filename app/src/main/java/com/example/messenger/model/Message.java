@@ -13,6 +13,7 @@ public class Message {
     public String content;
     public double sendTime;
     public String topicId;
+    public boolean hasSentSuccess;
 
     public Message(int type, int id, User user, String content, double sendTime, String topicId) {
         this.type = type;
@@ -21,6 +22,7 @@ public class Message {
         this.content = content;
         this.sendTime = sendTime;
         this.topicId = topicId;
+        this.hasSentSuccess = false;
     }
 
     public Message() {

@@ -39,6 +39,7 @@ import com.example.messenger.model.SharedViewModel;
 import com.example.messenger.model.User;
 import com.example.messenger.utils.FileUtils;
 import com.example.messenger.utils.ImageUtils;
+import com.example.messenger.utils.SendTask;
 import com.example.messenger.utils.UserUtils;
 import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.IO;
@@ -283,7 +284,7 @@ public class MessageFragment extends Fragment {
         editText.setText("");
         rvListMessage.smoothScrollToPosition(messages.size()-1);
         String json = gson.toJson(newMessage);
-        mSocket.emit("MESSAGE_FROM_USER", json);
+        new SendTask().execute(json);
     }
 
     public void hideKeyboard(View view) {
@@ -365,7 +366,7 @@ public class MessageFragment extends Fragment {
                     adapter.notifyDataSetChanged();
                     rvListMessage.smoothScrollToPosition(messages.size()-1);
                     String json = gson.toJson(newMessage);
-                    mSocket.emit("MESSAGE_FROM_USER", json);
+                    new SendTask().execute(json);
                 }
             }
         });
@@ -380,7 +381,7 @@ public class MessageFragment extends Fragment {
                     adapter.notifyDataSetChanged();
                     rvListMessage.smoothScrollToPosition(messages.size()-1);
                     String json = gson.toJson(newMessage);
-                    mSocket.emit("MESSAGE_FROM_USER", json);
+                    new SendTask().execute(json);
                 }
             }
         });
