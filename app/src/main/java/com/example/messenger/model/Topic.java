@@ -5,9 +5,9 @@ public class Topic {
     public String lastMess;
     public long sendTime;
     public String topicId;
-    public boolean hasNewMessage;
+    public int hasNewMessage;
 
-    public Topic(String[] name, String lastMess, long sendTime, String topicId, boolean hasNewMessage) {
+    public Topic(String[] name, String lastMess, long sendTime, String topicId, int hasNewMessage) {
         this.name = name;
         this.lastMess = lastMess;
         this.sendTime = sendTime;

@@ -24,6 +24,7 @@ import com.example.messenger.adapter.SearchResultRecyclerAdapter;
 import com.example.messenger.adapter.TopicRecyclerAdapter;
 import com.example.messenger.model.Topic;
 import com.example.messenger.model.User;
+import com.example.messenger.model.response.GetAllTopicResponse;
 import com.example.messenger.model.response.GetTopicResponse;
 import com.example.messenger.model.response.SearchUserResponse;
 import com.example.messenger.utils.ConstUtils;
@@ -86,13 +87,6 @@ public class ListTopicFragment extends Fragment {
         mSocket.connect();
         mSocket.on("TOPIC_FROM_SERVER", onNewTopic);
 
-        String[] name1 = {"Nguyễn Văn A", "Nguyễn Văn B"};
-        String[] name2 = {"Nguyễn Văn C", "Nguyễn Văn D"};
-        String[] name3 = {"Nguyễn Văn E"};
-        topics.add(new Topic(name1, "Tin nhắn cuối cùng", new Date().getTime(), "1_2", false ));
-        topics.add(new Topic(name2, "Tin nhắn cuối cùng", new Date().getTime(), "1_2", false ));
-        topics.add(new Topic(name3, "Tin nhắn cuối cùng", new Date().getTime(), "1_2", false ));
-
     }
 
     @Override
@@ -116,21 +110,7 @@ public class ListTopicFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         initView(view);
 
-        layoutManager = new LinearLayoutManager(getContext());
-        rvListTopic.setLayoutManager(layoutManager);
-        adapter = new TopicRecyclerAdapter(getActivity(), topics);
-        adapter.SetOnItemClickListener(new TopicRecyclerAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(View view, int position) {
-                String topicName =getTopicName(topics.get(position).name);
-                String topicId = topics.get(position).topicId;
-                Bundle bundle = new Bundle();
-                bundle.putString("topicId", topicId);
-                bundle.putString("topicName", topicName);
-                Navigation.findNavController(getView()).navigate(R.id.messageFragment, bundle);
-            }
-        });
-        rvListTopic.setAdapter(adapter);
+        getAllTopic(String.valueOf(currentUser.id));
 
         addIcon.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -175,6 +155,42 @@ public class ListTopicFragment extends Fragment {
         mBuilder.setView(mView);
         dialog = mBuilder.create();
         dialog.show();
+    }
+
+    private void getAllTopic(String userId){
+        RequestParams rp = new RequestParams();
+        rp.add("userID", userId);
+
+        HttpUtils.post("getTopicByUserID", rp, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                Log.d("GET_TOPIC_RESPONSE", String.valueOf(response));
+                GetAllTopicResponse getAllTopicResponse = gson.fromJson(String.valueOf(response), GetAllTopicResponse.class);
+                topics.clear();
+                topics.addAll(Arrays.asList(getAllTopicResponse.response));
+                layoutManager = new LinearLayoutManager(getContext());
+                rvListTopic.setLayoutManager(layoutManager);
+                adapter = new TopicRecyclerAdapter(getActivity(), topics);
+                adapter.SetOnItemClickListener(new TopicRecyclerAdapter.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(View view, int position) {
+                        String topicName =getTopicName(topics.get(position).name);
+                        String topicId = topics.get(position).topicId;
+                        Bundle bundle = new Bundle();
+                        bundle.putString("topicId", topicId);
+                        bundle.putString("topicName", topicName);
+                        Navigation.findNavController(getView()).navigate(R.id.messageFragment, bundle);
+                    }
+                });
+                rvListTopic.setAdapter(adapter);
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONArray timeline) {
+                // Pull out the first event on the public timeline
+
+            }
+        });
     }
 
     private void onSearchUserPress(String keyword){
