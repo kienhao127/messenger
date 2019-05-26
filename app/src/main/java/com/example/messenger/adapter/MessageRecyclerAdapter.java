@@ -54,7 +54,7 @@ public class MessageRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             //nếu Type === TEXT
             case Message.TEXT: {
                 //Nếu userID === currentUserID ? layout_message_text_owner : layout_message_text
-                if (messages.get(i).user.id == currentUser.id) {
+                if (messages.get(i).senderId == currentUser.id) {
                     return new TextHolder(LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_message_text_owner, viewGroup, false));
                 } else  {
                     return new TextHolder(LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_message_text, viewGroup, false));
@@ -62,7 +62,7 @@ public class MessageRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             }
             case Message.IMAGE: {
                 //Nếu userID === currentUserID ? layout_message_text_owner : layout_message_text
-                if (messages.get(i).user.id == currentUser.id) {
+                if (messages.get(i).senderId == currentUser.id) {
                     return new ImageHolder(LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_message_image_owner, viewGroup, false));
                 } else  {
                     return new ImageHolder(LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_message_image, viewGroup, false));
@@ -70,7 +70,7 @@ public class MessageRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             }
             case Message.FILE: {
                 //Nếu userID === currentUserID ? layout_message_text_owner : layout_message_text
-                if (messages.get(i).user.id == currentUser.id) {
+                if (messages.get(i).senderId == currentUser.id) {
                     return new FileHolder(LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_message_file_owner, viewGroup, false));
                 } else  {
                     return new FileHolder(LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_message_file, viewGroup, false));
@@ -85,7 +85,7 @@ public class MessageRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         Log.d("onBindViewHolder", messages.get(i).content);
         switch (messages.get(i).type) {
             case Message.TEXT: {
-                if (messages.get(i).user.id == currentUser.id) {
+                if (messages.get(i).senderId == currentUser.id) {
                     TextHolder textHolder = (TextHolder) viewHolder;
                     textHolder.textViewContent.setText(messages.get(i).content);
                     textHolder.textViewSendTime.setText(TimeUtils.getRelativeTimeSpanString(((Message) messages.get(i)).sendTime));
@@ -97,7 +97,7 @@ public class MessageRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 //                    textHolder.imageViewAvatar
                     textHolder.textViewContent.setText(messages.get(i).content);
                     textHolder.textViewSendTime.setText(TimeUtils.getRelativeTimeSpanString(((Message) messages.get(i)).sendTime));
-                    if (i-1 >= 0 && messages.get(i-1).user.id != currentUser.id){
+                    if (i-1 >= 0 && messages.get(i-1).senderId != currentUser.id){
                         textHolder.imageViewAvatar.setVisibility(View.INVISIBLE);
                     }
                     if ((i-1 >= 0 && TimeUtils.CompareDate(messages.get(i-1).sendTime, messages.get(i).sendTime, 15)) || i==0){
@@ -107,7 +107,7 @@ public class MessageRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                 return;
             }
             case Message.IMAGE: {
-                if (messages.get(i).user.id == currentUser.id) {
+                if (messages.get(i).senderId == currentUser.id) {
                     ImageHolder imageHolder = (ImageHolder) viewHolder;
                     imageHolder.messageImage.setClipToOutline(true);
                     if (!messages.get(i).content.isEmpty()){
@@ -133,7 +133,7 @@ public class MessageRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                                 .into(imageHolder.messageImage);
                     }
                     imageHolder.textViewSendTime.setText(TimeUtils.getRelativeTimeSpanString(((Message) messages.get(i)).sendTime));
-                    if (i - 1 >= 0 && messages.get(i - 1).user.id != currentUser.id) {
+                    if (i - 1 >= 0 && messages.get(i - 1).senderId != currentUser.id) {
                         imageHolder.imageViewAvatar.setVisibility(View.INVISIBLE);
                     }
                     if ((i - 1 >= 0 && TimeUtils.CompareDate(messages.get(i - 1).sendTime, messages.get(i).sendTime, 15)) || i == 0) {
@@ -143,7 +143,7 @@ public class MessageRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                 return;
             }
             case Message.FILE: {
-                if (messages.get(i).user.id == currentUser.id) {
+                if (messages.get(i).senderId == currentUser.id) {
                     FileHolder fileHolder = (FileHolder) viewHolder;
                     fileHolder.textViewContent.setText(((MessageFile) messages.get(i)).filename);
                     fileHolder.textViewContent.setPaintFlags(fileHolder.textViewContent.getPaintFlags()| Paint.UNDERLINE_TEXT_FLAG);
@@ -157,7 +157,7 @@ public class MessageRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                     fileHolder.textViewContent.setText(((MessageFile) messages.get(i)).filename);
                     fileHolder.textViewContent.setPaintFlags(fileHolder.textViewContent.getPaintFlags()| Paint.UNDERLINE_TEXT_FLAG);
                     fileHolder.textViewSendTime.setText(TimeUtils.getRelativeTimeSpanString((messages.get(i)).sendTime));
-                    if (i-1 >= 0 && messages.get(i-1).user.id != currentUser.id){
+                    if (i-1 >= 0 && messages.get(i-1).senderId != currentUser.id){
                         fileHolder.imageViewAvatar.setVisibility(View.INVISIBLE);
                     }
                     if ((i-1 >= 0 && TimeUtils.CompareDate(messages.get(i-1).sendTime, messages.get(i).sendTime, 15)) || i==0){

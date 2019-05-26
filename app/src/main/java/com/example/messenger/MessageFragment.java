@@ -37,7 +37,10 @@ import com.example.messenger.model.MessageFile;
 import com.example.messenger.model.MessagePhoto;
 import com.example.messenger.model.SharedViewModel;
 import com.example.messenger.model.User;
+import com.example.messenger.model.response.GetMessageResponse;
+import com.example.messenger.model.response.MessageReponse;
 import com.example.messenger.utils.FileUtils;
+import com.example.messenger.utils.HttpUtils;
 import com.example.messenger.utils.ImageUtils;
 import com.example.messenger.utils.SendTask;
 import com.example.messenger.utils.UserUtils;
@@ -45,12 +48,18 @@ import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
 import com.google.gson.Gson;
+import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Date;
 
 import androidx.navigation.Navigation;
+import cz.msebera.android.httpclient.Header;
 
 import static com.example.messenger.utils.ConstUtils.BASE_URL;
 
@@ -103,13 +112,6 @@ public class MessageFragment extends Fragment {
         mSocket.on("MESSAGE_FROM_SERVER", onNewMessage);
 
         currentUser = UserUtils.getCurrentUser(getActivity());
-
-        messages.add(new Message(1, 1, new User("", 1, "Hào"), "Tin nhắn 1", 1552905040998.0, "1_2"));
-        messages.add(new Message(1, 1, new User("", 2, "Hào"), "Tin nhắn 2", 1552905040998.0, "1_2"));
-        messages.add(new Message(1, 1, new User("", 2, "Hào"), "Tin nhắn 3", 1552905040998.0, "1_2"));
-        messages.add(new Message(1, 1, new User("", 1, "Hào"), "Tin nhắn 4", 1552905040998.0, "1_2"));
-        messages.add(new Message(1, 1, new User("", 1, "Hào"), "Tin nhắn 5", 1552905040998.0, "1_2"));
-
     }
 
     @Override
@@ -278,7 +280,7 @@ public class MessageFragment extends Fragment {
     private void sendMessage(View v){
         Log.d("Send", "Clicked");
         String content = editText.getText().toString();
-        Message newMessage = new Message(Message.TEXT, 1, currentUser, content, new Date().getTime(), topicId);
+        Message newMessage = new Message(Message.TEXT, 1, currentUser.id, content, new Date().getTime(), topicId);
         messages.add(newMessage);
         adapter.notifyDataSetChanged();
         editText.setText("");
@@ -361,7 +363,7 @@ public class MessageFragment extends Fragment {
                 if (charSequence != null){
                     String imageBase64 = ImageUtils.imagePathToBase64(charSequence.toString());
                     Log.d("IMAGE_BASE64", imageBase64);
-                    Message newMessage = new MessagePhoto(Message.IMAGE, 1, currentUser, imageBase64, new Date().getTime(), topicId, "");
+                    Message newMessage = new MessagePhoto(Message.IMAGE, 1, currentUser.id, imageBase64, new Date().getTime(), topicId, "");
                     messages.add(newMessage);
                     adapter.notifyDataSetChanged();
                     rvListMessage.smoothScrollToPosition(messages.size()-1);
@@ -376,13 +378,47 @@ public class MessageFragment extends Fragment {
                 if (localFile != null){
                     String fileBase64 = FileUtils.fileToBase64(localFile.path);
                     Log.d("FILE_BASE64", fileBase64);
-                    Message newMessage = new MessageFile(Message.FILE, 1, currentUser, fileBase64, new Date().getTime(), topicId, localFile.name, BASE_URL+localFile.name);
+                    Message newMessage = new MessageFile(Message.FILE, 1, currentUser.id, fileBase64, new Date().getTime(), topicId, localFile.name, BASE_URL+localFile.name);
                     messages.add(newMessage);
                     adapter.notifyDataSetChanged();
                     rvListMessage.smoothScrollToPosition(messages.size()-1);
                     String json = gson.toJson(newMessage);
                     new SendTask().execute(json);
                 }
+            }
+        });
+    }
+
+    private void getAllMessage(String topicId){
+        RequestParams rp = new RequestParams();
+        rp.add("topicId", topicId);
+
+        HttpUtils.post("getMessageByTopicID", rp, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                Log.d("GET_TOPIC_RESPONSE", String.valueOf(response));
+                ArrayList<Message> messages = new ArrayList<>();
+
+                GetMessageResponse getMessageResponse = gson.fromJson(String.valueOf(response), GetMessageResponse.class);
+                for (MessageReponse messageReponse : getMessageResponse.messageReponses){
+                    Message message = null;
+                    if (messageReponse.type == 1){
+                        message = new Message(messageReponse.type, messageReponse.id, messageReponse.senderId, messageReponse.content, messageReponse.sendTime, messageReponse.topicId);
+                    }
+                    if (messageReponse.type == 2){
+                        message = new MessagePhoto(messageReponse.type, messageReponse.id, messageReponse.senderId, messageReponse.content, messageReponse.sendTime, messageReponse.topicId, messageReponse.photoURL);
+                    }
+                    if (messageReponse.type == 5){
+                        message = new MessageFile(messageReponse.type, messageReponse.id, messageReponse.senderId, messageReponse.content, messageReponse.sendTime, messageReponse.topicId, messageReponse.filename, messageReponse.downloadURL);
+                    }
+                    messages.add(message);
+                }
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONArray timeline) {
+                // Pull out the first event on the public timeline
+
             }
         });
     }

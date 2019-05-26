@@ -9,20 +9,18 @@ public class Message {
 
     public int type;
     public int id;
-    public User user;
+    public int senderId;
     public String content;
     public double sendTime;
     public String topicId;
-    public boolean hasSentSuccess;
 
-    public Message(int type, int id, User user, String content, double sendTime, String topicId) {
+    public Message(int type, int id, int senderId, String content, double sendTime, String topicId) {
         this.type = type;
         this.id = id;
-        this.user = user;
+        this.senderId = senderId;
         this.content = content;
         this.sendTime = sendTime;
         this.topicId = topicId;
-        this.hasSentSuccess = false;
     }
 
     public Message() {
