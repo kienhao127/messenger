@@ -112,6 +112,7 @@ public class MessageFragment extends Fragment {
         mSocket.on("MESSAGE_FROM_SERVER", onNewMessage);
 
         currentUser = UserUtils.getCurrentUser(getActivity());
+
     }
 
     @Override
@@ -145,6 +146,8 @@ public class MessageFragment extends Fragment {
                 getActivity().onBackPressed();
             }
         });
+
+        getAllMessage(topicId);
 
     }
 
@@ -390,17 +393,17 @@ public class MessageFragment extends Fragment {
     }
 
     private void getAllMessage(String topicId){
+        Log.d("TOPICID", topicId);
         RequestParams rp = new RequestParams();
-        rp.add("topicId", topicId);
+        rp.add("topicID", topicId);
 
         HttpUtils.post("getMessageByTopicID", rp, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                Log.d("GET_TOPIC_RESPONSE", String.valueOf(response));
-                ArrayList<Message> messages = new ArrayList<>();
+                Log.d("GET_MESSAGE_RESPONSE", String.valueOf(response));
 
                 GetMessageResponse getMessageResponse = gson.fromJson(String.valueOf(response), GetMessageResponse.class);
-                for (MessageReponse messageReponse : getMessageResponse.messageReponses){
+                for (MessageReponse messageReponse : getMessageResponse.response){
                     Message message = null;
                     if (messageReponse.type == 1){
                         message = new Message(messageReponse.type, messageReponse.id, messageReponse.senderId, messageReponse.content, messageReponse.sendTime, messageReponse.topicId);
@@ -412,6 +415,8 @@ public class MessageFragment extends Fragment {
                         message = new MessageFile(messageReponse.type, messageReponse.id, messageReponse.senderId, messageReponse.content, messageReponse.sendTime, messageReponse.topicId, messageReponse.filename, messageReponse.downloadURL);
                     }
                     messages.add(message);
+                    adapter.notifyDataSetChanged();
+                    rvListMessage.smoothScrollToPosition(messages.size()-1);
                 }
             }
 

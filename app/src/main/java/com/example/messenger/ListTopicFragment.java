@@ -86,6 +86,7 @@ public class ListTopicFragment extends Fragment {
         currentUser = UserUtils.getCurrentUser(getActivity());
         mSocket.connect();
         mSocket.on("TOPIC_FROM_SERVER", onNewTopic);
+        Log.d("onCreate", "TOPIC FRAGMENT");
 
     }
 

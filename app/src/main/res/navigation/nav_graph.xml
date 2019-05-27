@@ -53,11 +53,6 @@
             android:id="@+id/action_messageFragment_to_galleryFragment"
             app:destination="@id/galleryFragment" />
         <action
-            android:id="@+id/action_messageFragment_to_listTopicFragment"
-            app:destination="@id/listTopicFragment"
-            app:popUpTo="@+id/listTopicFragment"
-            app:popUpToInclusive="true"/>
-        <action
             android:id="@+id/action_messageFragment_to_filesFragment"
             app:destination="@id/filesFragment" />
     </fragment>
