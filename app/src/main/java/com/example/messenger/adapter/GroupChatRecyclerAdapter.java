@@ -49,7 +49,7 @@ public class GroupChatRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
         GroupUserHolder groupUserHolder = (GroupUserHolder) viewHolder;
-        groupUserHolder.textViewFullname.setText(users.get(i).name);
+        groupUserHolder.textViewFullname.setText(users.get(i).fullname);
 //        groupUserHolder.imageViewAvatar
     }
 

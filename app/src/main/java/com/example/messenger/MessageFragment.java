@@ -87,7 +87,8 @@ public class MessageFragment extends Fragment {
 
     private SharedViewModel viewModel;
 
-
+    View _rootView;
+    boolean isViewCreated = false;
     private Socket mSocket;
     {
         try {
@@ -119,7 +120,10 @@ public class MessageFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_message, container, false);
+        if (_rootView == null) {
+            _rootView = inflater.inflate(R.layout.fragment_message, container, false);
+        }
+        return _rootView;
     }
 
     private void initView(View view){
@@ -139,11 +143,12 @@ public class MessageFragment extends Fragment {
         Toolbar toolbar = (Toolbar) view.findViewById(R.id.my_toolbar);
         toolbar.setTitle(topicName);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+
         toolbar.setNavigationIcon(R.drawable.arrow_back);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getActivity().onBackPressed();
+                Navigation.findNavController(getView()).navigateUp();
             }
         });
 
@@ -155,129 +160,132 @@ public class MessageFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        initView(view);
+        if (!isViewCreated) {
+            isViewCreated = true;
+            initView(view);
 
-        editText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            editText.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                Log.d("LOG", s.toString().trim().length() + "");
-                if (s.toString().trim().length() == 0){
-                    imageViewAttachFile.setVisibility(View.VISIBLE);
-                    imageViewSend.setVisibility(View.GONE);
-                } else {
-                    imageViewAttachFile.setVisibility(View.GONE);
-                    imageViewSend.setVisibility(View.VISIBLE);
                 }
-            }
-        });
 
-        //Gửi emoticon
-        imageViewEmoji.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d("Emoji", "Clicked");
-            }
-        });
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                }
 
-        //Gửi file đính kèm
-        imageViewAttachFile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d("Attach", "Clicked");
-                hideKeyboard(v);
-                if ((ContextCompat.checkSelfPermission(getContext(),
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) && (ContextCompat.checkSelfPermission(getContext(),
-                        Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
-                    if ((ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE)) && (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
-                            Manifest.permission.READ_EXTERNAL_STORAGE))) {
-
+                @Override
+                public void afterTextChanged(Editable s) {
+                    Log.d("LOG", s.toString().trim().length() + "");
+                    if (s.toString().trim().length() == 0) {
+                        imageViewAttachFile.setVisibility(View.VISIBLE);
+                        imageViewSend.setVisibility(View.GONE);
                     } else {
-                        ActivityCompat.requestPermissions(getActivity(),
-                                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE},
-                                REQUEST_PERMISSIONS);
+                        imageViewAttachFile.setVisibility(View.GONE);
+                        imageViewSend.setVisibility(View.VISIBLE);
                     }
-                }else {
-                    Navigation.findNavController(getView()).navigate(R.id.filesFragment);
                 }
-            }
-        });
+            });
 
-        //Chọn file hình ảnh
-        imageViewImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d("Image", "Clicked");
-                hideKeyboard(v);
-                if ((ContextCompat.checkSelfPermission(getContext(),
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) && (ContextCompat.checkSelfPermission(getContext(),
-                        Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
-                    if ((ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE)) && (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
-                            Manifest.permission.READ_EXTERNAL_STORAGE))) {
+            //Gửi emoticon
+            imageViewEmoji.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.d("Emoji", "Clicked");
+                }
+            });
 
+            //Gửi file đính kèm
+            imageViewAttachFile.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.d("Attach", "Clicked");
+                    hideKeyboard(v);
+                    if ((ContextCompat.checkSelfPermission(getContext(),
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) && (ContextCompat.checkSelfPermission(getContext(),
+                            Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
+                        if ((ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
+                                Manifest.permission.WRITE_EXTERNAL_STORAGE)) && (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
+                                Manifest.permission.READ_EXTERNAL_STORAGE))) {
+
+                        } else {
+                            ActivityCompat.requestPermissions(getActivity(),
+                                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE},
+                                    REQUEST_PERMISSIONS);
+                        }
                     } else {
-                        ActivityCompat.requestPermissions(getActivity(),
-                                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE},
-                                REQUEST_PERMISSIONS);
-                    }
-                }else {
-                    Navigation.findNavController(getView()).navigate(R.id.galleryFragment);
-                }
-            }
-        });
-
-        //Gửi tin nhắn
-        imageViewSend.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                sendMessage(v);
-            }
-        });
-
-
-        layoutManager = new LinearLayoutManager(getContext());
-        rvListMessage.setLayoutManager(layoutManager);
-        adapter = new MessageRecyclerAdapter(messages, currentUser, getContext());
-
-        adapter.SetOnItemClickListener(new MessageRecyclerAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(View view, int position) {
-                Uri uri = Uri.parse(BASE_URL + "download/" + ((MessageFile) messages.get(position)).filename); // missing 'http://' will cause crashed
-                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                startActivity(intent);
-            }
-        });
-        rvListMessage.scrollToPosition(adapter.getItemCount() - 1);
-        rvListMessage.setAdapter(adapter);
-
-        //Tap ngoài editext sẽ ẩn bàn phím
-        rvListMessage.setOnTouchListener(new View.OnTouchListener() {
-            float x1, x2;
-
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    x1 = event.getX();
-                }
-                if (event.getAction() == MotionEvent.ACTION_UP) {
-                    x2 = event.getX();
-                    if (x1 == x2) {
-                        hideKeyboard(v);
+                        Navigation.findNavController(getView()).navigate(R.id.filesFragment);
                     }
                 }
-                return false;
-            }
-        });
+            });
+
+            //Chọn file hình ảnh
+            imageViewImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.d("Image", "Clicked");
+                    hideKeyboard(v);
+                    if ((ContextCompat.checkSelfPermission(getContext(),
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) && (ContextCompat.checkSelfPermission(getContext(),
+                            Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
+                        if ((ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
+                                Manifest.permission.WRITE_EXTERNAL_STORAGE)) && (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
+                                Manifest.permission.READ_EXTERNAL_STORAGE))) {
+
+                        } else {
+                            ActivityCompat.requestPermissions(getActivity(),
+                                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE},
+                                    REQUEST_PERMISSIONS);
+                        }
+                    } else {
+                        Navigation.findNavController(getView()).navigate(R.id.galleryFragment);
+                    }
+                }
+            });
+
+            //Gửi tin nhắn
+            imageViewSend.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    sendMessage(v);
+                }
+            });
+
+
+            layoutManager = new LinearLayoutManager(getContext());
+            rvListMessage.setLayoutManager(layoutManager);
+            adapter = new MessageRecyclerAdapter(messages, currentUser, getContext());
+
+            adapter.SetOnItemClickListener(new MessageRecyclerAdapter.OnItemClickListener() {
+                @Override
+                public void onItemClick(View view, int position) {
+                    Uri uri = Uri.parse(BASE_URL + "download/" + ((MessageFile) messages.get(position)).filename); // missing 'http://' will cause crashed
+                    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                    startActivity(intent);
+                }
+            });
+            rvListMessage.scrollToPosition(adapter.getItemCount() - 1);
+            rvListMessage.setAdapter(adapter);
+
+            //Tap ngoài editext sẽ ẩn bàn phím
+            rvListMessage.setOnTouchListener(new View.OnTouchListener() {
+                float x1, x2;
+
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                        x1 = event.getX();
+                    }
+                    if (event.getAction() == MotionEvent.ACTION_UP) {
+                        x2 = event.getX();
+                        if (x1 == x2) {
+                            hideKeyboard(v);
+                        }
+                    }
+                    return false;
+                }
+            });
+        }
     }
 
     private void sendMessage(View v){

@@ -64,6 +64,8 @@ public class ListTopicFragment extends Fragment {
     private AlertDialog dialog;
 
     private User currentUser;
+    View _rootView;
+    boolean isViewCreated = false;
     Gson gson;
 
     private Socket mSocket;
@@ -94,7 +96,11 @@ public class ListTopicFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_list_topic, container, false);
+        Log.d("onCreateView", "LIST TOPIC");
+        if (_rootView == null) {
+            _rootView = inflater.inflate(R.layout.fragment_list_topic, container, false);
+        }
+        return _rootView;
     }
 
     private void initView(View view){
@@ -109,32 +115,35 @@ public class ListTopicFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull final View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        initView(view);
+        if (!isViewCreated) {
+            isViewCreated = true;
 
-        getAllTopic(String.valueOf(currentUser.id));
+            initView(view);
+            Log.d("onViewCreated", "LIST TOPIC");
+            getAllTopic(String.valueOf(currentUser.id));
 
-        addIcon.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                PopupMenu dropDownMenu = new PopupMenu(getContext(), addIcon);
-                dropDownMenu.getMenuInflater().inflate(R.menu.add_menu, dropDownMenu.getMenu());
-                dropDownMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            addIcon.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    PopupMenu dropDownMenu = new PopupMenu(getContext(), addIcon);
+                    dropDownMenu.getMenuInflater().inflate(R.menu.add_menu, dropDownMenu.getMenu());
+                    dropDownMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
 
-                    @Override
-                    public boolean onMenuItemClick(MenuItem menuItem) {
-                        if (menuItem.getItemId() == R.id.add_friend){
-                            onAddFriendClick();
+                        @Override
+                        public boolean onMenuItemClick(MenuItem menuItem) {
+                            if (menuItem.getItemId() == R.id.add_friend) {
+                                onAddFriendClick();
+                            }
+                            if (menuItem.getItemId() == R.id.create_room) {
+                                Navigation.findNavController(getActivity(), R.id.nav_host_fragment).navigate(R.id.createGroupFragment);
+                            }
+                            return true;
                         }
-                        if (menuItem.getItemId() == R.id.create_room){
-                            Navigation.findNavController(view).navigate(R.id.createGroupFragment);
-                        }
-                        return true;
-                    }
-                });
-                dropDownMenu.show();
-            }
-        });
-
+                    });
+                    dropDownMenu.show();
+                }
+            });
+        }
     }
 
     private void onAddFriendClick(){
@@ -257,7 +266,7 @@ public class ListTopicFragment extends Fragment {
                 if (getTopicResponse.returnCode == 0){
                     int userId[] = {currentUser.id, user.id};
                     String topicId = createTopicId(userId);
-                    String topicName = user.name;
+                    String topicName = user.fullname;
                     Bundle bundle = new Bundle();
                     bundle.putString("topicId", topicId);
                     bundle.putString("topicName", topicName);
@@ -283,10 +292,10 @@ public class ListTopicFragment extends Fragment {
     private String getTopicName(String[] name){
         String topicName = "";
         for (int i = 0; i < name.length; i++){
-            if (i != 0 && !name[i].equals(UserUtils.getCurrentUser(getActivity()).name) && !topicName.isEmpty()){
+            if (i != 0 && !name[i].equals(UserUtils.getCurrentUser(getActivity()).fullname) && !topicName.isEmpty()){
                 topicName += ", ";
             }
-            if (!name[i].equals(UserUtils.getCurrentUser(getActivity()).name)) {
+            if (!name[i].equals(UserUtils.getCurrentUser(getActivity()).fullname)) {
                 topicName += name[i];
             }
         }
@@ -320,4 +329,10 @@ public class ListTopicFragment extends Fragment {
             });
         }
     };
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d("ON DESTROY", "LISTTOPIC");
+    }
 }

@@ -19,11 +19,24 @@ import android.widget.TextView;
 
 import com.example.messenger.adapter.GroupChatRecyclerAdapter;
 import com.example.messenger.model.User;
+import com.example.messenger.model.response.GetListFriendResponse;
+import com.example.messenger.utils.HttpUtils;
+import com.example.messenger.utils.UserUtils;
+import com.google.gson.Gson;
+import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 
 import androidx.navigation.NavOptions;
 import androidx.navigation.Navigation;
+import cz.msebera.android.httpclient.Header;
 
 public class CreateGroupFragment extends Fragment {
 
@@ -35,7 +48,9 @@ public class CreateGroupFragment extends Fragment {
     private ArrayList<User> users = new ArrayList<>();
     private ArrayList<User> resultUsers = new ArrayList<>();
     private ArrayList<User> checkedUsers = new ArrayList<>();
-    GroupChatRecyclerAdapter adapter;
+    private User currentUser;
+    private GroupChatRecyclerAdapter adapter;
+    private Gson gson;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -55,6 +70,8 @@ public class CreateGroupFragment extends Fragment {
     }
 
     private void initView(View view) {
+        gson = new Gson();
+        currentUser = UserUtils.getCurrentUser(getActivity());
         myToolbar = (Toolbar) view.findViewById(R.id.my_toolbar);
         okButton = (TextView) view.findViewById(R.id.ok_button);
         rvListUser = (RecyclerView) view.findViewById(R.id.rvListUser);
@@ -69,7 +86,7 @@ public class CreateGroupFragment extends Fragment {
                 getActivity().onBackPressed();
             }
         });
-        resultUsers = (ArrayList<User>) users.clone();
+        resultUsers = new ArrayList<>();
     }
 
     @Override
@@ -77,29 +94,15 @@ public class CreateGroupFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         initView(view);
 
-
+        getListFriend(String.valueOf(currentUser.id));
         layoutManager = new LinearLayoutManager(getContext());
-        rvListUser.setLayoutManager(layoutManager);
-        adapter = new GroupChatRecyclerAdapter(resultUsers);
-        adapter.SetOnItemCheckedListener(new GroupChatRecyclerAdapter.OnItemCheckedListener() {
-            @Override
-            public void onItemChecked(View view, int position, boolean isChecked) {
-                if (isChecked) {
-                    checkedUsers.add(resultUsers.get(position));
-                } else {
-                    checkedUsers.remove(resultUsers.get(position));
-                }
-                textViewTotalChecked.setText(String.valueOf(checkedUsers.size()));
-            }
-        });
-        rvListUser.setAdapter(adapter);
-
         okButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Bundle bundle = new Bundle();
-                bundle.putString("topicId", "2_12_22");
-                bundle.putString("topicName", "Tên nhóm");
+                resultUsers.add(currentUser);
+                bundle.putString("topicId", getTopicId(resultUsers));
+                bundle.putString("topicName", getTopicName(resultUsers));
                 Navigation.findNavController(getView())
                         .navigate(
                                 R.id.action_createGroupFragment_to_messageFragment,
@@ -107,6 +110,77 @@ public class CreateGroupFragment extends Fragment {
                                 new NavOptions.Builder()
                                         .setPopUpTo(R.id.createGroupFragment,
                                                 true).build());
+            }
+        });
+    }
+
+    private String getTopicId(ArrayList<User> users){
+        Collections.sort(users, new UserComparator());
+        String topicId = "";
+        for (int i = 0; i < users.size(); i++){
+            topicId += String.valueOf(users.get(i).id);
+            if (i != users.size()-1){
+                topicId += "_";
+            }
+
+        }
+        return topicId;
+    }
+
+    private String getTopicName(ArrayList<User> users){
+        Collections.sort(users, new UserComparator());
+        String topicName = "";
+        for (int i = 0; i < users.size(); i++){
+            if (i != 0 && !users.get(i).fullname.equals(currentUser.fullname) && !topicName.isEmpty()){
+                topicName += ", ";
+            }
+            if (!users.get(i).fullname.equals(currentUser.fullname)) {
+                topicName += users.get(i).fullname;
+            }
+        }
+        return topicName;
+    }
+
+    public class UserComparator implements Comparator<User>
+    {
+        public int compare(User left, User right) {
+            return left.id - right.id;
+        }
+    }
+
+    private void getListFriend(String userId) {
+        RequestParams rp = new RequestParams();
+        rp.add("userID", userId);
+
+        HttpUtils.post("getListFriendsByUserId", rp, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                Log.d("GET_TOPIC_RESPONSE", String.valueOf(response));
+                GetListFriendResponse getListFriendResponse = gson.fromJson(String.valueOf(response), GetListFriendResponse.class);
+                users.clear();
+                resultUsers.clear();
+                users.addAll(Arrays.asList(getListFriendResponse.response));
+                layoutManager = new LinearLayoutManager(getContext());
+                rvListUser.setLayoutManager(layoutManager);
+                adapter = new GroupChatRecyclerAdapter(users);
+                adapter.SetOnItemCheckedListener(new GroupChatRecyclerAdapter.OnItemCheckedListener() {
+                    @Override
+                    public void onItemChecked(View view, int position, boolean isChecked) {
+                        if (isChecked){
+                            resultUsers.add(users.get(position));
+                        } else {
+                            resultUsers.remove(users.get(position));
+                        }
+                        Log.d("CHECKED USER LENGTH", String.valueOf(resultUsers.size()));
+                    }
+                });
+                rvListUser.setAdapter(adapter);
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONArray timeline) {
+                // Pull out the first event on the public timeline
+
             }
         });
     }

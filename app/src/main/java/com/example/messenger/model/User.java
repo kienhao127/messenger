@@ -3,12 +3,12 @@ package com.example.messenger.model;
 public class User {
     public String avatar;
     public int id;
-    public String name;
+    public String fullname;
 
-    public User(String avatar, int id, String name) {
+    public User(String avatar, int id, String fullname) {
         this.avatar = avatar;
         this.id = id;
-        this.name = name;
+        this.fullname = fullname;
     }
 
     public User(){
@@ -18,7 +18,7 @@ public class User {
     public User(User user){
         this.avatar = user.avatar;
         this.id = user.id;
-        this.name = user.name;
+        this.fullname = user.fullname;
 
     }
 }

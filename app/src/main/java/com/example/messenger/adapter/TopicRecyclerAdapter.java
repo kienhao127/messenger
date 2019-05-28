@@ -62,10 +62,10 @@ public class TopicRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
     private String topicName(String[] name){
         String topicName = "";
         for (int i = 0; i < name.length; i++){
-            if (i != 0 && !name[i].equals(UserUtils.getCurrentUser(activity).name) && !topicName.isEmpty()){
+            if (i != 0 && !name[i].equals(UserUtils.getCurrentUser(activity).fullname) && !topicName.isEmpty()){
                 topicName += ", ";
             }
-            if (!name[i].equals(UserUtils.getCurrentUser(activity).name)) {
+            if (!name[i].equals(UserUtils.getCurrentUser(activity).fullname)) {
                 topicName += name[i];
             }
 

@@ -49,7 +49,7 @@ public class SearchResultRecyclerAdapter extends RecyclerView.Adapter<RecyclerVi
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
         SearchUserHolder searchUserHolder = (SearchUserHolder) viewHolder;
-        searchUserHolder.textViewFullname.setText(users[i].name);
+        searchUserHolder.textViewFullname.setText(users[i].fullname);
 //        groupUserHolder.imageViewAvatar
     }
 

@@ -101,7 +101,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
 
                 LoginResponse loginResponse = gson.fromJson(String.valueOf(response), LoginResponse.class);
                 User user = (User) loginResponse.user;
-                Log.d("CURRENT USER", user.name);
+                Log.d("CURRENT USER", user.fullname);
 
                 SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPref.edit();
