@@ -291,7 +291,7 @@ public class MessageFragment extends Fragment {
     private void sendMessage(View v){
         Log.d("Send", "Clicked");
         String content = editText.getText().toString();
-        Message newMessage = new Message(Message.TEXT, 1, currentUser.id, content, new Date().getTime(), topicId);
+        Message newMessage = new Message(Message.TEXT, 1, currentUser.id, content, new Date().getTime(), topicId, currentUser.avatar);
         messages.add(newMessage);
         adapter.notifyDataSetChanged();
         editText.setText("");
@@ -374,12 +374,13 @@ public class MessageFragment extends Fragment {
                 if (charSequence != null){
                     String imageBase64 = ImageUtils.imagePathToBase64(charSequence.toString());
                     Log.d("IMAGE_BASE64", imageBase64);
-                    Message newMessage = new MessagePhoto(Message.IMAGE, 1, currentUser.id, imageBase64, new Date().getTime(), topicId, "");
+                    Message newMessage = new MessagePhoto(Message.IMAGE, 1, currentUser.id, imageBase64, new Date().getTime(), topicId, "", currentUser.avatar);
                     messages.add(newMessage);
                     adapter.notifyDataSetChanged();
                     rvListMessage.smoothScrollToPosition(messages.size()-1);
                     String json = gson.toJson(newMessage);
                     new SendTask().execute(json);
+                    viewModel.setPath(null);
                 }
             }
         });
@@ -389,12 +390,13 @@ public class MessageFragment extends Fragment {
                 if (localFile != null){
                     String fileBase64 = FileUtils.fileToBase64(localFile.path);
                     Log.d("FILE_BASE64", fileBase64);
-                    Message newMessage = new MessageFile(Message.FILE, 1, currentUser.id, fileBase64, new Date().getTime(), topicId, localFile.name, BASE_URL+localFile.name);
+                    Message newMessage = new MessageFile(Message.FILE, 1, currentUser.id, fileBase64, new Date().getTime(), topicId, localFile.name, BASE_URL+localFile.name, currentUser.avatar);
                     messages.add(newMessage);
                     adapter.notifyDataSetChanged();
                     rvListMessage.smoothScrollToPosition(messages.size()-1);
                     String json = gson.toJson(newMessage);
                     new SendTask().execute(json);
+                    viewModel.setLocalFile(null);
                 }
             }
         });
@@ -414,13 +416,13 @@ public class MessageFragment extends Fragment {
                 for (MessageReponse messageReponse : getMessageResponse.response){
                     Message message = null;
                     if (messageReponse.type == 1){
-                        message = new Message(messageReponse.type, messageReponse.id, messageReponse.senderId, messageReponse.content, messageReponse.sendTime, messageReponse.topicId);
+                        message = new Message(messageReponse.type, messageReponse.id, messageReponse.senderId, messageReponse.content, messageReponse.sendTime, messageReponse.topicId, messageReponse.avatar);
                     }
                     if (messageReponse.type == 2){
-                        message = new MessagePhoto(messageReponse.type, messageReponse.id, messageReponse.senderId, messageReponse.content, messageReponse.sendTime, messageReponse.topicId, messageReponse.photoURL);
+                        message = new MessagePhoto(messageReponse.type, messageReponse.id, messageReponse.senderId, messageReponse.content, messageReponse.sendTime, messageReponse.topicId, messageReponse.photoURL, messageReponse.avatar);
                     }
                     if (messageReponse.type == 5){
-                        message = new MessageFile(messageReponse.type, messageReponse.id, messageReponse.senderId, messageReponse.content, messageReponse.sendTime, messageReponse.topicId, messageReponse.filename, messageReponse.downloadURL);
+                        message = new MessageFile(messageReponse.type, messageReponse.id, messageReponse.senderId, messageReponse.content, messageReponse.sendTime, messageReponse.topicId, messageReponse.filename, messageReponse.downloadURL, messageReponse.avatar);
                     }
                     messages.add(message);
                     adapter.notifyDataSetChanged();

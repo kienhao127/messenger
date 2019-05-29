@@ -10,4 +10,5 @@ public class MessageReponse {
     public String filename;
     public String downloadURL;
     public String photoURL;
+    public String avatar;
 }

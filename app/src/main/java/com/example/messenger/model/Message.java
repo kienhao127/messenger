@@ -13,14 +13,16 @@ public class Message {
     public String content;
     public double sendTime;
     public String topicId;
+    public String avatar;
 
-    public Message(int type, int id, int senderId, String content, double sendTime, String topicId) {
+    public Message(int type, int id, int senderId, String content, double sendTime, String topicId, String avatar) {
         this.type = type;
         this.id = id;
         this.senderId = senderId;
         this.content = content;
         this.sendTime = sendTime;
         this.topicId = topicId;
+        this.avatar = avatar;
     }
 
     public Message() {
