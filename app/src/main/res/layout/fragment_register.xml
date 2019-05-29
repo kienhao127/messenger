@@ -1,14 +1,123 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".RegisterFragment">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".LoginFragment"
+    android:orientation="vertical"
+    android:background="#000">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/my_toolbar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="?attr/actionBarSize"
+        android:layout_marginLeft="0dp"
+        app:titleTextColor="#FFF"
+        android:background="#000"/>
 
-</FrameLayout>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:padding="30dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_gravity="center_vertical|center_horizontal">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="MESSENGER"
+                android:textSize="40dp"
+                android:textColor="#FFFFFF"
+                android:gravity="center"
+                android:layout_marginBottom="50dp"/>
+
+            <!-- TODO: Update blank fragment layout -->
+            <EditText
+                android:id="@+id/email"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:hint="Email"
+                android:textColor="#FFF"
+                android:textColorHint="#DDD"
+                android:drawableLeft="@drawable/mail"
+                android:background="@null"
+                android:paddingLeft="2dp"
+                android:drawablePadding="15dp"/>
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="0.5dp"
+                android:background="#FFF" />
+
+
+            <EditText
+                android:id="@+id/password"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:hint="Mật khẩu"
+                android:inputType="textPassword"
+                android:textColor="#FFF"
+                android:textColorHint="#DDD"
+                android:drawableLeft="@drawable/password"
+                android:background="@null"
+                android:paddingLeft="2dp"
+                android:layout_marginTop="10dp"
+                android:drawablePadding="15dp"/>
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="0.5dp"
+                android:background="#FFF" />
+
+            <EditText
+                android:id="@+id/rePpassword"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:hint="Nhập lại mật khẩu"
+                android:inputType="textPassword"
+                android:textColor="#FFF"
+                android:textColorHint="#DDD"
+                android:drawableLeft="@drawable/password"
+                android:background="@null"
+                android:paddingLeft="2dp"
+                android:layout_marginTop="10dp"
+                android:drawablePadding="15dp"/>
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="0.5dp"
+                android:background="#FFF" />
+
+            <EditText
+                android:id="@+id/editTextFullname"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:hint="Họ tên"
+                android:textColor="#FFF"
+                android:textColorHint="#DDD"
+                android:drawableLeft="@drawable/fullname"
+                android:background="@null"
+                android:paddingLeft="2dp"
+                android:layout_marginTop="10dp"
+                android:drawablePadding="15dp"/>
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="0.5dp"
+                android:background="#FFF" />
+
+            <Button
+                android:id="@+id/register_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                android:text="ĐĂNG KÝ"
+                android:textColor="#FFF"
+                android:textSize="18dp"
+                android:background="@drawable/background_button_login"/>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

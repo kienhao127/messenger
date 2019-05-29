@@ -9,5 +9,8 @@
         android:id="@+id/create_room"
         android:title="Tạo nhóm"
         android:visible="true" />
-
+    <item
+        android:id="@+id/logout"
+        android:title="Đăng xuất"
+        android:visible="true" />
 </menu>

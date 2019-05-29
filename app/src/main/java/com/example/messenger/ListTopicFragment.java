@@ -1,5 +1,7 @@
 package com.example.messenger;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -136,6 +138,13 @@ public class ListTopicFragment extends Fragment {
                             }
                             if (menuItem.getItemId() == R.id.create_room) {
                                 Navigation.findNavController(getActivity(), R.id.nav_host_fragment).navigate(R.id.createGroupFragment);
+                            }
+                            if (menuItem.getItemId() == R.id.logout) {
+                                SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+                                SharedPreferences.Editor editor = sharedPref.edit();
+                                editor.putString("USER_INFO", "");
+                                editor.commit();
+                                getActivity().onBackPressed();
                             }
                             return true;
                         }

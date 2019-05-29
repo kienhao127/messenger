@@ -1,6 +1,8 @@
 package com.example.messenger;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -83,7 +85,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
                 onLoginPress();
                 break;
             case R.id.register_button:
-                //TODO implement
+                Navigation.findNavController(getView()).navigate(R.id.registerFragment);
                 break;
         }
     }
@@ -100,16 +102,33 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
                 Gson gson = new Gson();
 
                 LoginResponse loginResponse = gson.fromJson(String.valueOf(response), LoginResponse.class);
-                User user = (User) loginResponse.user;
-                Log.d("CURRENT USER", user.fullname);
+                if (loginResponse.returnCode == 0){
+                    AlertDialog.Builder builder1 = new AlertDialog.Builder(getContext());
+                    builder1.setMessage("Email hoặc tài khoản không đúng!");
+                    builder1.setCancelable(false);
 
-                SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPref.edit();
-                editor.putString("USER_INFO", gson.toJson(user));
-                editor.commit();
+                    builder1.setPositiveButton(
+                            "OK",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    dialog.cancel();
+                                }
+                            });
 
-                mSocket.emit("USER_LOGIN", user.id);
-                Navigation.findNavController(getView()).navigate(R.id.listTopicFragment);
+                    AlertDialog alert11 = builder1.create();
+                    alert11.show();
+                } else {
+                    User user = (User) loginResponse.user;
+                    Log.d("CURRENT USER", user.fullname);
+
+                    SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPref.edit();
+                    editor.putString("USER_INFO", gson.toJson(user));
+                    editor.commit();
+
+                    mSocket.emit("USER_LOGIN", user.id);
+                    Navigation.findNavController(getView()).navigate(R.id.listTopicFragment);
+                }
             }
 
             @Override

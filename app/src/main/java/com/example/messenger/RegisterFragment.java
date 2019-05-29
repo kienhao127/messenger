@@ -1,108 +1,163 @@
 package com.example.messenger;
 
-import android.content.Context;
-import android.net.Uri;
-import android.os.Bundle;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.graphics.Color;
 import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
+import android.view.LayoutInflater;
 import android.view.ViewGroup;
+import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.widget.EditText;
+import android.widget.Button;
 
+import com.example.messenger.model.response.RegisterReponse;
+import com.example.messenger.utils.HttpUtils;
+import com.google.gson.Gson;
+import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link RegisterFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link RegisterFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class RegisterFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+import org.json.JSONArray;
+import org.json.JSONObject;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+import androidx.navigation.Navigation;
+import cz.msebera.android.httpclient.Header;
 
-    private OnFragmentInteractionListener mListener;
+public class RegisterFragment extends Fragment implements View.OnClickListener {
 
-    public RegisterFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment RegisterFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static RegisterFragment newInstance(String param1, String param2) {
-        RegisterFragment fragment = new RegisterFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
+    private Toolbar myToolbar;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_register, container, false);
-    }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
+        return inflater.inflate(R.layout.fragment_register, null);
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        Toolbar toolbar = (Toolbar) view.findViewById(R.id.my_toolbar);
+        toolbar.setTitle("Đăng ký");
+        toolbar.setBackgroundColor(Color.BLACK);
+        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+        toolbar.setNavigationIcon(R.drawable.arrow_back);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getActivity().onBackPressed();
+            }
+        });
+        view.findViewById(R.id.register_button).setOnClickListener(this);
+    }
+
+    private EditText getEmail(){
+        return (EditText) getView().findViewById(R.id.email);
+    }
+
+    private EditText getPassword(){
+        return (EditText) getView().findViewById(R.id.password);
+    }
+
+    private EditText getRePpassword(){
+        return (EditText) getView().findViewById(R.id.rePpassword);
+    }
+
+    private EditText getEditTextFullname(){
+        return (EditText) getView().findViewById(R.id.editTextFullname);
     }
 
     @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.register_button:
+                String validateString = validate();
+                if (validateString.isEmpty()){
+                    onRegisterPress();
+                } else {
+                    AlertDialog.Builder builder1 = new AlertDialog.Builder(getContext());
+                    builder1.setMessage(validateString);
+                    builder1.setCancelable(false);
+
+                    builder1.setPositiveButton(
+                            "OK",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    dialog.cancel();
+                                }
+                            });
+
+                    AlertDialog alert11 = builder1.create();
+                    alert11.show();
+                }
+                break;
+        }
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+    private String validate(){
+        if (getEditTextFullname().getText().toString().isEmpty() || getPassword().getText().toString().isEmpty() || getRePpassword().getText().toString().isEmpty() || getEmail().getText().toString().isEmpty()){
+            return "Thông tin không được để trống";
+        }
+        if (!getPassword().getText().toString().equals(getRePpassword().getText().toString())){
+            return "Mật khẩu nhập lại không khớp";
+        }
+        return "";
+    }
+
+    private void onRegisterPress(){
+        RequestParams rp = new RequestParams();
+        rp.add("email", getEmail().getText().toString()); rp.add("password", getPassword().getText().toString());
+
+        HttpUtils.post("register", rp, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                // If the response is JSONObject instead of expected JSONArray
+                Log.d("REGISTER REPONSE", String.valueOf(response));
+                Gson gson = new Gson();
+
+                RegisterReponse registerReponse = gson.fromJson(String.valueOf(response), RegisterReponse.class);
+                if (registerReponse.result == 0){
+                    AlertDialog.Builder builder1 = new AlertDialog.Builder(getContext());
+                    builder1.setMessage(registerReponse.msg);
+                    builder1.setCancelable(false);
+
+                    builder1.setPositiveButton(
+                            "OK",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    dialog.cancel();
+                                }
+                            });
+
+                    AlertDialog alert11 = builder1.create();
+                    alert11.show();
+                } else {
+                    AlertDialog.Builder builder1 = new AlertDialog.Builder(getContext());
+                    builder1.setMessage("Đăng ký thành công!");
+                    builder1.setCancelable(false);
+
+                    builder1.setPositiveButton(
+                            "OK",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    dialog.cancel();
+                                    getActivity().onBackPressed();
+                                }
+                            });
+
+                    AlertDialog alert11 = builder1.create();
+                    alert11.show();
+                }
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONArray timeline) {
+                // Pull out the first event on the public timeline
+
+            }
+        });
     }
 }
