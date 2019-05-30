@@ -259,9 +259,21 @@ public class MessageFragment extends Fragment {
             adapter.SetOnItemClickListener(new MessageRecyclerAdapter.OnItemClickListener() {
                 @Override
                 public void onItemClick(View view, int position) {
-                    Uri uri = Uri.parse(BASE_URL + "download/" + ((MessageFile) messages.get(position)).filename); // missing 'http://' will cause crashed
-                    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                    startActivity(intent);
+                    if (messages.get(position).type == Message.FILE){
+                        Uri uri = Uri.parse(BASE_URL + "download/" + ((MessageFile) messages.get(position)).filename); // missing 'http://' will cause crashed
+                        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                        startActivity(intent);
+                    }
+                    if (messages.get(position).type == Message.LINK){
+                        String url = messages.get(position).content;
+                        if (!url.startsWith("http://") && !url.startsWith("https://")){
+                            url = "http://" + url;
+                        }
+                        Uri uri = Uri.parse(url);
+                        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                        startActivity(intent);
+                    }
+
                 }
             });
             rvListMessage.scrollToPosition(adapter.getItemCount() - 1);
@@ -291,7 +303,11 @@ public class MessageFragment extends Fragment {
     private void sendMessage(View v){
         Log.d("Send", "Clicked");
         String content = editText.getText().toString();
+        String regex = "(https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})";
         Message newMessage = new Message(Message.TEXT, 1, currentUser.id, content, new Date().getTime(), topicId, currentUser.avatar);
+        if (content.matches(regex)){
+            newMessage.type = Message.LINK;
+        }
         messages.add(newMessage);
         adapter.notifyDataSetChanged();
         editText.setText("");
@@ -415,7 +431,7 @@ public class MessageFragment extends Fragment {
                 GetMessageResponse getMessageResponse = gson.fromJson(String.valueOf(response), GetMessageResponse.class);
                 for (MessageReponse messageReponse : getMessageResponse.response){
                     Message message = null;
-                    if (messageReponse.type == 1){
+                    if (messageReponse.type == 1 || messageReponse.type == 4){
                         message = new Message(messageReponse.type, messageReponse.id, messageReponse.senderId, messageReponse.content, messageReponse.sendTime, messageReponse.topicId, messageReponse.avatar);
                     }
                     if (messageReponse.type == 2){

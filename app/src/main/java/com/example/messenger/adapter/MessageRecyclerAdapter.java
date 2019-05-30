@@ -69,6 +69,14 @@ public class MessageRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                     return new ImageHolder(LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_message_image, viewGroup, false));
                 }
             }
+            case Message.LINK: {
+                //Nếu userID === currentUserID ? layout_message_text_owner : layout_message_text
+                if (messages.get(i).senderId == currentUser.id) {
+                    return new TextHolder(LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_message_text_owner, viewGroup, false));
+                } else  {
+                    return new TextHolder(LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_message_text, viewGroup, false));
+                }
+            }
             case Message.FILE: {
                 //Nếu userID === currentUserID ? layout_message_text_owner : layout_message_text
                 if (messages.get(i).senderId == currentUser.id) {
@@ -152,6 +160,35 @@ public class MessageRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                 }
                 return;
             }
+            case Message.LINK: {
+                TextHolder textHolder = (TextHolder) viewHolder;
+
+                if (messages.get(i).senderId == currentUser.id) {
+                    textHolder.textViewContent.setText(messages.get(i).content);
+                    textHolder.textViewContent.setPaintFlags(textHolder.textViewContent.getPaintFlags()| Paint.UNDERLINE_TEXT_FLAG);
+                    textHolder.textViewSendTime.setText(TimeUtils.getRelativeTimeSpanString(((Message) messages.get(i)).sendTime));
+                    if ((i-1 >= 0 && TimeUtils.CompareDate(messages.get(i-1).sendTime, messages.get(i).sendTime, 15)) || i==0){
+                        textHolder.textViewSendTime.setVisibility(View.VISIBLE);
+                    }
+                } else  {
+                    if (!messages.get(i).avatar.isEmpty()){
+                        Glide.with(context)
+                                .load(messages.get(i).avatar)
+                                .apply(RequestOptions.circleCropTransform())
+                                .into(textHolder.imageViewAvatar);
+                    }
+                    textHolder.textViewContent.setText(messages.get(i).content);
+                    textHolder.textViewContent.setPaintFlags(textHolder.textViewContent.getPaintFlags()| Paint.UNDERLINE_TEXT_FLAG);
+                    textHolder.textViewSendTime.setText(TimeUtils.getRelativeTimeSpanString(((Message) messages.get(i)).sendTime));
+                    if (i-1 >= 0 && messages.get(i-1).senderId == messages.get(i).senderId ){
+                        textHolder.imageViewAvatar.setVisibility(View.INVISIBLE);
+                    }
+                    if ((i-1 >= 0 && TimeUtils.CompareDate(messages.get(i-1).sendTime, messages.get(i).sendTime, 15)) || i==0){
+                        textHolder.textViewSendTime.setVisibility(View.VISIBLE);
+                    }
+                }
+                return;
+            }
             case Message.FILE: {
                 FileHolder fileHolder = (FileHolder) viewHolder;
                 if (messages.get(i).senderId == currentUser.id) {
@@ -223,6 +260,9 @@ public class MessageRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                         textViewSendTime.setVisibility(View.GONE);
                     } else {
                         textViewSendTime.setVisibility(View.VISIBLE);
+                    }
+                    if (mItemClickListener!=null){
+                        mItemClickListener.onItemClick(view, getAdapterPosition());
                     }
                 }
             });
