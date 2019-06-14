@@ -110,6 +110,8 @@ public class RegisterFragment extends Fragment implements View.OnClickListener {
     private void onRegisterPress(){
         RequestParams rp = new RequestParams();
         rp.add("email", getEmail().getText().toString()); rp.add("password", getPassword().getText().toString());
+        rp.add("fullname", getEditTextFullname().getText().toString());
+
 
         HttpUtils.post("register", rp, new JsonHttpResponseHandler() {
             @Override
